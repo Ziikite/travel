@@ -19,6 +19,7 @@ export function PlaceSearchDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [nameKoByPlaceId, setNameKoByPlaceId] = useState<Record<string, string>>({});
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -47,6 +48,7 @@ export function PlaceSearchDialog({
       // amap_poi_id 컬럼에 구글맵 place_id를 저장한다(지도 제공자에 무관한 범용 외부 POI 식별자로 취급).
       amap_poi_id: place.placeId,
       name_zh: place.name,
+      name_ko: nameKoByPlaceId[place.placeId]?.trim() || null,
       address_zh: place.address,
       latitude: place.latitude,
       longitude: place.longitude,
@@ -112,7 +114,7 @@ export function PlaceSearchDialog({
           {results.map((place) => (
             <li
               key={place.placeId}
-              className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+              className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
@@ -123,14 +125,25 @@ export function PlaceSearchDialog({
                   <p className="mt-0.5 truncate text-xs text-zinc-400">{place.category}</p>
                 )}
               </div>
-              <button
-                type="button"
-                disabled={savedIds.has(place.placeId)}
-                onClick={() => handleSave(place)}
-                className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
-              >
-                {savedIds.has(place.placeId) ? "저장됨" : "저장"}
-              </button>
+              <div className="flex gap-2">
+                <input
+                  value={nameKoByPlaceId[place.placeId] ?? ""}
+                  onChange={(e) =>
+                    setNameKoByPlaceId((prev) => ({ ...prev, [place.placeId]: e.target.value }))
+                  }
+                  disabled={savedIds.has(place.placeId)}
+                  placeholder="한국어 이름 (선택)"
+                  className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                />
+                <button
+                  type="button"
+                  disabled={savedIds.has(place.placeId)}
+                  onClick={() => handleSave(place)}
+                  className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
+                >
+                  {savedIds.has(place.placeId) ? "저장됨" : "저장"}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

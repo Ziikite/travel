@@ -129,6 +129,7 @@ export function PlaceCard({
 }
 
 function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) {
+  const [nameKo, setNameKo] = useState(place.name_ko ?? "");
   const [priority, setPriority] = useState<Priority>(place.priority);
   const [category, setCategory] = useState(place.category ?? "");
   const [stayMinutes, setStayMinutes] = useState(place.stay_minutes?.toString() ?? "");
@@ -143,6 +144,7 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
     await supabase
       .from("places")
       .update({
+        name_ko: nameKo || null,
         priority,
         category: category || null,
         stay_minutes: stayMinutes ? Number(stayMinutes) : null,
@@ -156,6 +158,12 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
 
   return (
     <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+      <input
+        value={nameKo}
+        onChange={(e) => setNameKo(e.target.value)}
+        placeholder="한국어 이름"
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+      />
       <div className="flex gap-2">
         <select
           value={priority}
