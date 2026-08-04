@@ -20,6 +20,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* flex/grid 컨테이너 안에서 input/select/textarea가 내용 크기보다 작아지지
+   못해 모바일 좁은 화면에서 옆으로 넘치던 문제를 막는다. */
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+/* 어떤 자식 요소든 flex 컨테이너의 폭을 억지로 넓히지 않게 한다(모바일 가로 스크롤 방지). */
+* {
+  min-width: 0;
 }
 
 /* Tailwind의 preflight가 margin을 0으로 리셋해서 <dialog>의 기본

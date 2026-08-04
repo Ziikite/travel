@@ -154,7 +154,7 @@ export function BucketListItemRow({
             label: "사진",
             value: item.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={item.image_url} alt={item.title} className="max-h-64 rounded-lg" />
+              <img src={item.image_url} alt={item.title} className="max-h-64 max-w-full rounded-lg" />
             ) : null,
           },
         ]}

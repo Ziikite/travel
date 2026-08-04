@@ -26,7 +26,7 @@ export function TripNav() {
           {trip.destination_city ?? "목적지 미정"}
           {trip.start_date && trip.end_date ? ` · ${trip.start_date} ~ ${trip.end_date}` : ""}
         </p>
-        <nav className="mt-4 flex gap-5 text-sm font-medium">
+        <nav className="mt-4 -mb-px flex gap-5 overflow-x-auto text-sm font-medium">
           {TABS.map((tab) => {
             const href = `${base}${tab.href}`;
             const active =
@@ -35,7 +35,7 @@ export function TripNav() {
               <Link
                 key={tab.href}
                 href={href}
-                className={`border-b-2 pb-3 ${
+                className={`shrink-0 whitespace-nowrap border-b-2 pb-3 ${
                   active
                     ? "border-zinc-900 text-zinc-900 dark:border-zinc-50 dark:text-zinc-50"
                     : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300"
