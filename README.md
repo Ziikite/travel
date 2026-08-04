@@ -9,8 +9,9 @@
 ### 1. Supabase 프로젝트 준비
 
 1. https://supabase.com/dashboard 에서 새 프로젝트를 만듭니다.
-2. 프로젝트의 SQL Editor에서 `supabase/migrations/0001_init.sql` 내용을 실행합니다.
+2. 프로젝트의 SQL Editor에서 `supabase/migrations/0001_init.sql` 내용을 실행합니다(재실행해도 안전합니다).
 3. Project Settings → API 에서 `Project URL`과 `anon public key`를 복사합니다.
+4. Authentication → Providers → Email 에서 **Confirm email**을 꺼주세요. 이 앱은 실제 이메일 없이 아이디(내부적으로 가짜 이메일로 변환)로 가입하기 때문에, 이메일 확인 메일을 받을 수 없습니다.
 
 ### 2. 구글맵 API 키 준비
 
@@ -36,6 +37,17 @@ npm run dev
 ```
 
 http://localhost:3000 에서 확인합니다.
+
+### 5. Vercel 배포
+
+1. https://vercel.com 에서 GitHub 계정으로 로그인하고, 이 저장소를 Import 합니다.
+2. Project Settings → Environment Variables 에 `.env.local`과 동일한 3개 값(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`)을 등록합니다.
+3. Deploy를 누르면 끝입니다. 이후 `main` 브랜치에 push할 때마다 자동으로 재배포됩니다.
+4. 구글맵 API 키를 HTTP 리퍼러로 제한했다면, Vercel이 준 도메인(`*.vercel.app`)도 허용 목록에 추가해주세요.
+
+## 로그인 방식
+
+이메일 없이 **아이디/비밀번호**로만 가입·로그인합니다. 내부적으로는 Supabase Auth가 이메일 형식을 요구하기 때문에 아이디를 `아이디@users.china-trip-planner.local` 형태의 가짜 이메일로 변환해서 저장합니다(`app/login/actions.ts`). 실제 메일이 발송되지 않으므로 Supabase 프로젝트의 이메일 확인(Confirm email)을 반드시 꺼야 합니다.
 
 ## 기능 (MVP)
 

@@ -7,12 +7,10 @@ export function LoginForm({
   initialMode,
   redirectTo,
   error,
-  notice,
 }: {
   initialMode: "signin" | "signup";
   redirectTo: string;
   error?: string;
-  notice?: string;
 }) {
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
 
@@ -43,11 +41,6 @@ export function LoginForm({
         </button>
       </div>
 
-      {notice && (
-        <p className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-          {notice}
-        </p>
-      )}
       {error && (
         <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           {error}
@@ -58,9 +51,9 @@ export function LoginForm({
         <form action={signIn} className="flex flex-col gap-3">
           <input type="hidden" name="redirect" value={redirectTo} />
           <input
-            type="email"
-            name="email"
-            placeholder="이메일"
+            type="text"
+            name="username"
+            placeholder="아이디"
             required
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
@@ -83,15 +76,9 @@ export function LoginForm({
           <input type="hidden" name="redirect" value={redirectTo} />
           <input
             type="text"
-            name="nickname"
-            placeholder="닉네임"
-            required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="이메일"
+            name="username"
+            placeholder="아이디 (영문/숫자/밑줄 3~20자)"
+            pattern="[a-zA-Z0-9_]{3,20}"
             required
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />

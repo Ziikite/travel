@@ -1,11 +1,14 @@
 -- 중국 여행 공동 플래너 MVP: 초기 스키마
 -- users(profiles) / trips / trip_members / places / place_votes
 -- / itineraries / itinerary_places / shopping_lists / shopping_items / activity_logs
+--
+-- 이 파일은 몇 번을 다시 실행해도 안전합니다(idempotent). 중간에 에러가 나서
+-- 재실행하더라도, 이미 만들어진 객체는 건드리지 않고 빠진 부분만 채웁니다.
 
 -- =========================================================
 -- 1. profiles (auth.users 미러링)
 -- =========================================================
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nickname text not null,
   email text not null,
@@ -28,6 +31,7 @@ begin
 end;
 $$ language plpgsql security definer set search_path = public;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
@@ -35,7 +39,7 @@ create trigger on_auth_user_created
 -- =========================================================
 -- 2. trips / trip_members
 -- =========================================================
-create table public.trips (
+create table if not exists public.trips (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references public.profiles(id),
   title text not null,
@@ -47,7 +51,7 @@ create table public.trips (
   updated_at timestamptz not null default now()
 );
 
-create table public.trip_members (
+create table if not exists public.trip_members (
   trip_id uuid not null references public.trips(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
   role text not null check (role in ('owner', 'editor', 'viewer')),
@@ -69,6 +73,7 @@ begin
 end;
 $$ language plpgsql security definer set search_path = public;
 
+drop trigger if exists on_trip_created on public.trips;
 create trigger on_trip_created
   after insert on public.trips
   for each row execute function public.handle_new_trip();
@@ -76,7 +81,7 @@ create trigger on_trip_created
 -- =========================================================
 -- 3. places / place_votes
 -- =========================================================
-create table public.places (
+create table if not exists public.places (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references public.trips(id) on delete cascade,
   created_by uuid not null references public.profiles(id),
@@ -97,7 +102,7 @@ create table public.places (
   updated_at timestamptz not null default now()
 );
 
-create table public.place_votes (
+create table if not exists public.place_votes (
   place_id uuid not null references public.places(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
   vote_type text not null default 'want',
@@ -108,7 +113,7 @@ create table public.place_votes (
 -- =========================================================
 -- 4. itineraries / itinerary_places
 -- =========================================================
-create table public.itineraries (
+create table if not exists public.itineraries (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references public.trips(id) on delete cascade,
   itinerary_date date not null,
@@ -120,7 +125,7 @@ create table public.itineraries (
   unique (trip_id, itinerary_date)
 );
 
-create table public.itinerary_places (
+create table if not exists public.itinerary_places (
   id uuid primary key default gen_random_uuid(),
   itinerary_id uuid not null references public.itineraries(id) on delete cascade,
   place_id uuid not null references public.places(id) on delete cascade,
@@ -138,14 +143,14 @@ create table public.itinerary_places (
 -- =========================================================
 -- 5. shopping_lists / shopping_items
 -- =========================================================
-create table public.shopping_lists (
+create table if not exists public.shopping_lists (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references public.trips(id) on delete cascade,
   title text not null default '쇼핑리스트',
   created_at timestamptz not null default now()
 );
 
-create table public.shopping_items (
+create table if not exists public.shopping_items (
   id uuid primary key default gen_random_uuid(),
   shopping_list_id uuid not null references public.shopping_lists(id) on delete cascade,
   created_by uuid not null references public.profiles(id),
@@ -167,7 +172,7 @@ create table public.shopping_items (
 -- =========================================================
 -- 6. activity_logs
 -- =========================================================
-create table public.activity_logs (
+create table if not exists public.activity_logs (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid references public.trips(id) on delete cascade,
   user_id uuid references public.profiles(id),
@@ -188,16 +193,22 @@ begin
 end;
 $$ language plpgsql;
 
+drop trigger if exists trips_set_updated_at on public.trips;
 create trigger trips_set_updated_at before update on public.trips
   for each row execute function public.set_updated_at();
+drop trigger if exists places_set_updated_at on public.places;
 create trigger places_set_updated_at before update on public.places
   for each row execute function public.set_updated_at();
+drop trigger if exists itineraries_set_updated_at on public.itineraries;
 create trigger itineraries_set_updated_at before update on public.itineraries
   for each row execute function public.set_updated_at();
+drop trigger if exists itinerary_places_set_updated_at on public.itinerary_places;
 create trigger itinerary_places_set_updated_at before update on public.itinerary_places
   for each row execute function public.set_updated_at();
+drop trigger if exists shopping_items_set_updated_at on public.shopping_items;
 create trigger shopping_items_set_updated_at before update on public.shopping_items
   for each row execute function public.set_updated_at();
+drop trigger if exists profiles_set_updated_at on public.profiles;
 create trigger profiles_set_updated_at before update on public.profiles
   for each row execute function public.set_updated_at();
 
@@ -233,12 +244,16 @@ begin
 end;
 $$ language plpgsql security definer set search_path = public;
 
+drop trigger if exists places_log_activity on public.places;
 create trigger places_log_activity after insert or update or delete on public.places
   for each row execute function public.log_activity();
+drop trigger if exists place_votes_log_activity on public.place_votes;
 create trigger place_votes_log_activity after insert or delete on public.place_votes
   for each row execute function public.log_activity();
+drop trigger if exists itinerary_places_log_activity on public.itinerary_places;
 create trigger itinerary_places_log_activity after insert or update or delete on public.itinerary_places
   for each row execute function public.log_activity();
+drop trigger if exists shopping_items_log_activity on public.shopping_items;
 create trigger shopping_items_log_activity after insert or update or delete on public.shopping_items
   for each row execute function public.log_activity();
 
@@ -339,98 +354,145 @@ alter table public.shopping_items enable row level security;
 alter table public.activity_logs enable row level security;
 
 -- profiles: 로그인 사용자는 서로의 기본 프로필을 볼 수 있음(닉네임/아바타 표시용), 본인만 수정
+drop policy if exists profiles_select on public.profiles;
 create policy profiles_select on public.profiles for select
   using (auth.uid() is not null);
+drop policy if exists profiles_update_own on public.profiles;
 create policy profiles_update_own on public.profiles for update
   using (id = auth.uid());
 
--- trips: 멤버만 조회, 본인이 owner_id일 때만 생성, owner만 수정/삭제
+-- trips: 멤버만 조회(+ 본인이 owner인 경우는 trip_members 등록 여부와 무관하게 항상 조회 가능 —
+-- INSERT 직후 결과를 돌려받을 때(.select()) SELECT 정책도 통과해야 하는데, 그 시점엔
+-- handle_new_trip 트리거가 아직 trip_members에 owner를 추가하기 전일 수 있기 때문),
+-- 본인이 owner_id일 때만 생성, owner만 수정/삭제
+drop policy if exists trips_select on public.trips;
 create policy trips_select on public.trips for select
-  using (public.is_trip_member(id));
+  using (public.is_trip_member(id) or owner_id = auth.uid());
+drop policy if exists trips_insert on public.trips;
 create policy trips_insert on public.trips for insert
   with check (owner_id = auth.uid());
+drop policy if exists trips_update on public.trips;
 create policy trips_update on public.trips for update
   using (public.is_trip_owner(id));
+drop policy if exists trips_delete on public.trips;
 create policy trips_delete on public.trips for delete
   using (public.is_trip_owner(id));
 
 -- trip_members: 멤버만 조회. insert는 트리거/RPC(SECURITY DEFINER)로만 수행(직접 insert 정책 없음)
+drop policy if exists trip_members_select on public.trip_members;
 create policy trip_members_select on public.trip_members for select
   using (public.is_trip_member(trip_id));
+drop policy if exists trip_members_update on public.trip_members;
 create policy trip_members_update on public.trip_members for update
   using (public.is_trip_owner(trip_id));
+drop policy if exists trip_members_delete on public.trip_members;
 create policy trip_members_delete on public.trip_members for delete
   using (public.is_trip_owner(trip_id) or user_id = auth.uid());
 
 -- places
+drop policy if exists places_select on public.places;
 create policy places_select on public.places for select
   using (public.is_trip_member(trip_id));
+drop policy if exists places_insert on public.places;
 create policy places_insert on public.places for insert
   with check (public.is_trip_editor(trip_id) and created_by = auth.uid());
+drop policy if exists places_update on public.places;
 create policy places_update on public.places for update
   using (public.is_trip_editor(trip_id));
+drop policy if exists places_delete on public.places;
 create policy places_delete on public.places for delete
   using (public.is_trip_owner(trip_id));
 
 -- place_votes
+drop policy if exists place_votes_select on public.place_votes;
 create policy place_votes_select on public.place_votes for select
   using (public.is_trip_member(public.trip_id_of_place(place_id)));
+drop policy if exists place_votes_insert on public.place_votes;
 create policy place_votes_insert on public.place_votes for insert
   with check (public.is_trip_member(public.trip_id_of_place(place_id)) and user_id = auth.uid());
+drop policy if exists place_votes_delete on public.place_votes;
 create policy place_votes_delete on public.place_votes for delete
   using (user_id = auth.uid());
 
 -- itineraries
+drop policy if exists itineraries_select on public.itineraries;
 create policy itineraries_select on public.itineraries for select
   using (public.is_trip_member(trip_id));
+drop policy if exists itineraries_insert on public.itineraries;
 create policy itineraries_insert on public.itineraries for insert
   with check (public.is_trip_editor(trip_id));
+drop policy if exists itineraries_update on public.itineraries;
 create policy itineraries_update on public.itineraries for update
   using (public.is_trip_editor(trip_id));
+drop policy if exists itineraries_delete on public.itineraries;
 create policy itineraries_delete on public.itineraries for delete
   using (public.is_trip_editor(trip_id));
 
 -- itinerary_places
+drop policy if exists itinerary_places_select on public.itinerary_places;
 create policy itinerary_places_select on public.itinerary_places for select
   using (public.is_trip_member(public.trip_id_of_itinerary(itinerary_id)));
+drop policy if exists itinerary_places_insert on public.itinerary_places;
 create policy itinerary_places_insert on public.itinerary_places for insert
   with check (public.is_trip_editor(public.trip_id_of_itinerary(itinerary_id)));
+drop policy if exists itinerary_places_update on public.itinerary_places;
 create policy itinerary_places_update on public.itinerary_places for update
   using (public.is_trip_editor(public.trip_id_of_itinerary(itinerary_id)));
+drop policy if exists itinerary_places_delete on public.itinerary_places;
 create policy itinerary_places_delete on public.itinerary_places for delete
   using (public.is_trip_editor(public.trip_id_of_itinerary(itinerary_id)));
 
 -- shopping_lists
+drop policy if exists shopping_lists_select on public.shopping_lists;
 create policy shopping_lists_select on public.shopping_lists for select
   using (public.is_trip_member(trip_id));
+drop policy if exists shopping_lists_insert on public.shopping_lists;
 create policy shopping_lists_insert on public.shopping_lists for insert
   with check (public.is_trip_editor(trip_id));
+drop policy if exists shopping_lists_update on public.shopping_lists;
 create policy shopping_lists_update on public.shopping_lists for update
   using (public.is_trip_editor(trip_id));
+drop policy if exists shopping_lists_delete on public.shopping_lists;
 create policy shopping_lists_delete on public.shopping_lists for delete
   using (public.is_trip_editor(trip_id));
 
 -- shopping_items
+drop policy if exists shopping_items_select on public.shopping_items;
 create policy shopping_items_select on public.shopping_items for select
   using (public.is_trip_member(public.trip_id_of_shopping_list(shopping_list_id)));
+drop policy if exists shopping_items_insert on public.shopping_items;
 create policy shopping_items_insert on public.shopping_items for insert
   with check (public.is_trip_editor(public.trip_id_of_shopping_list(shopping_list_id)) and created_by = auth.uid());
+drop policy if exists shopping_items_update on public.shopping_items;
 create policy shopping_items_update on public.shopping_items for update
   using (public.is_trip_editor(public.trip_id_of_shopping_list(shopping_list_id)));
+drop policy if exists shopping_items_delete on public.shopping_items;
 create policy shopping_items_delete on public.shopping_items for delete
   using (public.is_trip_editor(public.trip_id_of_shopping_list(shopping_list_id)));
 
 -- activity_logs: 멤버만 조회, insert는 트리거(SECURITY DEFINER)로만 수행
+drop policy if exists activity_logs_select on public.activity_logs;
 create policy activity_logs_select on public.activity_logs for select
   using (public.is_trip_member(trip_id));
 
 -- =========================================================
 -- 12. Realtime 발행 (Supabase Realtime이 구독할 테이블)
 -- =========================================================
-alter publication supabase_realtime add table public.trip_members;
-alter publication supabase_realtime add table public.places;
-alter publication supabase_realtime add table public.place_votes;
-alter publication supabase_realtime add table public.itineraries;
-alter publication supabase_realtime add table public.itinerary_places;
-alter publication supabase_realtime add table public.shopping_items;
-alter publication supabase_realtime add table public.activity_logs;
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'trip_members', 'places', 'place_votes', 'itineraries',
+    'itinerary_places', 'shopping_items', 'activity_logs'
+  ]
+  loop
+    if not exists (
+      select 1 from pg_publication_tables
+      where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t
+    ) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
+end;
+$$;
