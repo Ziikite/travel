@@ -3,6 +3,7 @@ export type Priority = "must" | "want" | "maybe";
 export type PlaceStatus = "active" | "archived" | "deleted";
 export type PurchaseType = "group" | "personal";
 export type ShoppingStatus = "pending" | "purchased" | "out_of_stock" | "cancelled";
+export type BucketListStatus = "pending" | "booked" | "done" | "cancelled";
 
 export interface Database {
   public: {
@@ -290,6 +291,82 @@ export interface Database {
           },
         ];
       };
+      bucket_lists: {
+        Row: {
+          id: string;
+          trip_id: string;
+          title: string;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["bucket_lists"]["Row"]> & {
+          trip_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["bucket_lists"]["Row"]>;
+        Relationships: [
+          {
+            foreignKeyName: "bucket_lists_trip_id_fkey";
+            columns: ["trip_id"];
+            isOneToOne: false;
+            referencedRelation: "trips";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      bucket_list_items: {
+        Row: {
+          id: string;
+          bucket_list_id: string;
+          created_by: string;
+          assigned_to: string | null;
+          place_id: string | null;
+          title: string;
+          contact_method: string | null;
+          contact_info: string | null;
+          expected_price_cny: number | null;
+          actual_price_cny: number | null;
+          scheduled_at: string | null;
+          memo: string | null;
+          status: BucketListStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["bucket_list_items"]["Row"]> & {
+          bucket_list_id: string;
+          created_by: string;
+          title: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["bucket_list_items"]["Row"]>;
+        Relationships: [
+          {
+            foreignKeyName: "bucket_list_items_bucket_list_id_fkey";
+            columns: ["bucket_list_id"];
+            isOneToOne: false;
+            referencedRelation: "bucket_lists";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bucket_list_items_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bucket_list_items_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bucket_list_items_place_id_fkey";
+            columns: ["place_id"];
+            isOneToOne: false;
+            referencedRelation: "places";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       activity_logs: {
         Row: {
           id: string;
@@ -350,3 +427,5 @@ export type ItineraryPlace = Database["public"]["Tables"]["itinerary_places"]["R
 export type ShoppingList = Database["public"]["Tables"]["shopping_lists"]["Row"];
 export type ShoppingItem = Database["public"]["Tables"]["shopping_items"]["Row"];
 export type ActivityLog = Database["public"]["Tables"]["activity_logs"]["Row"];
+export type BucketList = Database["public"]["Tables"]["bucket_lists"]["Row"];
+export type BucketListItem = Database["public"]["Tables"]["bucket_list_items"]["Row"];

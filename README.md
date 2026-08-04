@@ -9,7 +9,7 @@
 ### 1. Supabase 프로젝트 준비
 
 1. https://supabase.com/dashboard 에서 새 프로젝트를 만듭니다.
-2. 프로젝트의 SQL Editor에서 `supabase/migrations/0001_init.sql` 내용을 실행합니다(재실행해도 안전합니다).
+2. 프로젝트의 SQL Editor에서 `supabase/migrations/` 안의 파일들을 **번호 순서대로**(0001, 0002, ...) 실행합니다(전부 재실행해도 안전합니다).
 3. Project Settings → API 에서 `Project URL`과 `anon public key`를 복사합니다.
 4. Authentication → Providers → Email 에서 **Confirm email**을 꺼주세요. 이 앱은 실제 이메일 없이 아이디(내부적으로 가짜 이메일로 변환)로 가입하기 때문에, 이메일 확인 메일을 받을 수 없습니다.
 
@@ -55,6 +55,7 @@ http://localhost:3000 에서 확인합니다.
 - 구글맵 검색으로 장소 저장, 투표, 필터/정렬, 소프트 삭제·복구
 - 날짜별 일정 보드(드래그 정렬), 지도 표시, 구글맵 딥링크
 - 공동 쇼핑리스트(담당자·수량·가격·상태)
+- 공동 버킷리스트(연락 방법·연락처·가격·예약 시간·상태)
 - 실시간 동기화(Supabase Realtime) + 활동 로그
 
 ## 다음 단계 (2단계 백로그)
