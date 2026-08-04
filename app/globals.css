@@ -21,3 +21,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Tailwind의 preflight가 margin을 0으로 리셋해서 <dialog>의 기본
+   가운데 정렬(margin: auto)이 깨진다 — 명시적으로 되돌려준다. */
+dialog {
+  margin: auto;
+}
