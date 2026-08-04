@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { uploadItemImage } from "@/lib/storage";
+import { showToast } from "@/lib/toast";
 import type { PurchaseType } from "@/lib/types";
 
 type Member = { userId: string; nickname: string };
@@ -51,7 +52,7 @@ export function AddShoppingItemDialog({
 
       let resolvedPlaceId = placeId || null;
       if (newPlaceName) {
-        const { data: newPlace } = await supabase
+        const { data: newPlace, error: placeError } = await supabase
           .from("places")
           .insert({
             trip_id: tripId,
@@ -61,11 +62,15 @@ export function AddShoppingItemDialog({
           })
           .select("id")
           .single();
+        if (placeError) {
+          showToast(`장소 저장 실패: ${placeError.message}`, "error");
+          return;
+        }
         resolvedPlaceId = newPlace?.id ?? null;
       }
 
       const imageUrl = imageFile ? await uploadItemImage(imageFile) : null;
-      await supabase.from("shopping_items").insert({
+      const { error } = await supabase.from("shopping_items").insert({
         shopping_list_id: shoppingListId,
         created_by: currentUserId,
         product_name: productName,
@@ -78,6 +83,11 @@ export function AddShoppingItemDialog({
         purchase_type: purchaseType,
         image_url: imageUrl,
       });
+      if (error) {
+        showToast(`추가 실패: ${error.message}`, "error");
+      } else {
+        showToast("추가되었습니다");
+      }
     })();
   }
 

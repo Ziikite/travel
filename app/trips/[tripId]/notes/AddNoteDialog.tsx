@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { showToast } from "@/lib/toast";
 
 const CATEGORY_SUGGESTIONS = ["교통", "통신/심카드", "환전", "안전", "링크", "꿀팁", "기타"];
 
@@ -21,15 +22,22 @@ export function AddNoteDialog({ tripId, currentUserId }: { tripId: string; curre
     form.reset();
     dialogRef.current?.close();
 
-    const supabase = createClient();
-    void supabase.from("info_notes").insert({
-      trip_id: tripId,
-      created_by: currentUserId,
-      title,
-      url,
-      content,
-      category,
-    });
+    void (async () => {
+      const supabase = createClient();
+      const { error } = await supabase.from("info_notes").insert({
+        trip_id: tripId,
+        created_by: currentUserId,
+        title,
+        url,
+        content,
+        category,
+      });
+      if (error) {
+        showToast(`추가 실패: ${error.message}`, "error");
+      } else {
+        showToast("추가되었습니다");
+      }
+    })();
   }
 
   return (

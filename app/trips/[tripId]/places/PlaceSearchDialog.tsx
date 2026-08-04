@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { searchPlaces, type PlaceSearchResult } from "@/lib/maps";
 import { createClient } from "@/lib/supabase/client";
+import { showToast } from "@/lib/toast";
 import type { Priority } from "@/lib/types";
 
 interface Draft {
@@ -75,9 +76,12 @@ export function PlaceSearchDialog({
       priority: draft.priority,
       memo: draft.memo.trim() || null,
     });
-    if (!error) {
-      setSavedIds((prev) => new Set(prev).add(place.placeId));
+    if (error) {
+      showToast(`저장 실패: ${error.message}`, "error");
+      return;
     }
+    setSavedIds((prev) => new Set(prev).add(place.placeId));
+    showToast("장소가 저장되었습니다");
   }
 
   return (

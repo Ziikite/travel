@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { uploadItemImage } from "@/lib/storage";
+import { showToast } from "@/lib/toast";
 
 type Member = { userId: string; nickname: string };
 type PlaceOption = { id: string; name_zh: string };
@@ -45,7 +46,7 @@ export function AddBucketListItemDialog({
     void (async () => {
       const imageUrl = imageFile ? await uploadItemImage(imageFile) : null;
       const supabase = createClient();
-      await supabase.from("bucket_list_items").insert({
+      const { error } = await supabase.from("bucket_list_items").insert({
         bucket_list_id: bucketListId,
         created_by: currentUserId,
         title,
@@ -58,6 +59,11 @@ export function AddBucketListItemDialog({
         memo,
         image_url: imageUrl,
       });
+      if (error) {
+        showToast(`추가 실패: ${error.message}`, "error");
+      } else {
+        showToast("추가되었습니다");
+      }
     })();
   }
 

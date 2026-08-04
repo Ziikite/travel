@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { Toaster } from "@/components/Toaster";
 import { AppHeader } from "./AppHeader";
 
 export default async function TripsLayout({ children }: LayoutProps<"/trips">) {
@@ -21,6 +22,7 @@ export default async function TripsLayout({ children }: LayoutProps<"/trips">) {
     <div className="flex flex-1 flex-col">
       <AppHeader nickname={nickname} />
       <div className="flex flex-1 flex-col">{children}</div>
+      <Toaster />
     </div>
   );
 }
