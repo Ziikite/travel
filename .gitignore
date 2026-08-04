@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local tool/session state (not project source)
+.omc
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
