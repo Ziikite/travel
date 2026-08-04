@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "중국 여행 공동 플래너",
-  description: "고덕지도 기반 중국 여행 공동 계획 웹사이트",
+  description: "구글맵 기반 중국 여행 공동 계획 웹사이트",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

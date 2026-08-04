@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { searchPlaces, type AMapPoiResult } from "@/lib/amap";
+import { searchPlaces, type PlaceSearchResult } from "@/lib/maps";
 import { createClient } from "@/lib/supabase/client";
 
 export function PlaceSearchDialog({
@@ -15,7 +15,7 @@ export function PlaceSearchDialog({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState<AMapPoiResult[]>([]);
+  const [results, setResults] = useState<PlaceSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
@@ -26,35 +26,35 @@ export function PlaceSearchDialog({
     setLoading(true);
     setError(null);
     try {
-      const pois = await searchPlaces(keyword.trim(), destinationCity);
-      setResults(pois);
+      const places = await searchPlaces(keyword.trim(), destinationCity);
+      setResults(places);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : "검색에 실패했습니다. 고덕지도 API 키가 설정되어 있는지 확인해주세요."
+          : "검색에 실패했습니다. 구글맵 API 키가 설정되어 있는지 확인해주세요."
       );
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleSave(poi: AMapPoiResult) {
+  async function handleSave(place: PlaceSearchResult) {
     const supabase = createClient();
     const { error } = await supabase.from("places").insert({
       trip_id: tripId,
       created_by: currentUserId,
-      amap_poi_id: poi.amapPoiId,
-      name_zh: poi.name,
-      address_zh: poi.address,
-      latitude: poi.latitude,
-      longitude: poi.longitude,
-      coordinate_system: "GCJ02",
-      category: poi.category,
-      opening_hours: poi.openingHours,
+      // amap_poi_id 컬럼에 구글맵 place_id를 저장한다(지도 제공자에 무관한 범용 외부 POI 식별자로 취급).
+      amap_poi_id: place.placeId,
+      name_zh: place.name,
+      address_zh: place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
+      coordinate_system: "WGS84",
+      category: place.category,
     });
     if (!error) {
-      setSavedIds((prev) => new Set(prev).add(poi.amapPoiId));
+      setSavedIds((prev) => new Set(prev).add(place.placeId));
     }
   }
 
@@ -109,27 +109,27 @@ export function PlaceSearchDialog({
         )}
 
         <ul className="mt-4 flex max-h-96 flex-col gap-2 overflow-y-auto">
-          {results.map((poi) => (
+          {results.map((place) => (
             <li
-              key={poi.amapPoiId}
+              key={place.placeId}
               className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                  {poi.name}
+                  {place.name}
                 </p>
-                <p className="truncate text-xs text-zinc-500">{poi.address}</p>
-                {poi.category && (
-                  <p className="mt-0.5 truncate text-xs text-zinc-400">{poi.category}</p>
+                <p className="truncate text-xs text-zinc-500">{place.address}</p>
+                {place.category && (
+                  <p className="mt-0.5 truncate text-xs text-zinc-400">{place.category}</p>
                 )}
               </div>
               <button
                 type="button"
-                disabled={savedIds.has(poi.amapPoiId)}
-                onClick={() => handleSave(poi)}
+                disabled={savedIds.has(place.placeId)}
+                onClick={() => handleSave(place)}
                 className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
               >
-                {savedIds.has(poi.amapPoiId) ? "저장됨" : "저장"}
+                {savedIds.has(place.placeId) ? "저장됨" : "저장"}
               </button>
             </li>
           ))}

@@ -3,7 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { createClient } from "@/lib/supabase/client";
-import { amapMarkerUrl } from "@/lib/amap";
+import { googleMapsUrl } from "@/lib/maps";
 import type { ItineraryPlace, Place, Role } from "@/lib/types";
 
 export function ItineraryItemRow({
@@ -115,12 +115,12 @@ export function ItineraryItemRow({
 
           {place?.latitude && place?.longitude && (
             <a
-              href={amapMarkerUrl(place.name_zh, place.longitude, place.latitude)}
+              href={googleMapsUrl(place.latitude, place.longitude, place.amap_poi_id)}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-zinc-300 px-2 py-1 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
             >
-              고덕지도에서 열기
+              구글맵에서 열기
             </a>
           )}
           {place?.address_zh && (

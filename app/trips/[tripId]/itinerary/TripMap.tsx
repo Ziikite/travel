@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { loadAMap, type AMapMapInstance, type AMapMarkerInstance } from "@/lib/amap";
+import { loadMapsLibrary, loadMarkerLibrary } from "@/lib/maps";
 
 export interface MapPoint {
   id: string;
@@ -15,46 +15,51 @@ export function TripMap({ points }: { points: MapPoint[] }) {
 
   useEffect(() => {
     let destroyed = false;
-    let map: AMapMapInstance | null = null;
-    let markers: AMapMarkerInstance[] = [];
+    let markers: google.maps.Marker[] = [];
 
-    loadAMap()
-      .then((AMap) => {
+    Promise.all([loadMapsLibrary(), loadMarkerLibrary()])
+      .then(([{ Map }, { Marker }]) => {
         if (destroyed || !containerRef.current) return;
         const validPoints = points.filter(
           (p): p is MapPoint & { longitude: number; latitude: number } =>
             p.longitude != null && p.latitude != null
         );
 
-        map = new AMap.Map(containerRef.current, {
+        const map = new Map(containerRef.current, {
           zoom: 13,
           center: validPoints.length
-            ? [validPoints[0].longitude, validPoints[0].latitude]
-            : [116.397428, 39.90923],
+            ? { lat: validPoints[0].latitude, lng: validPoints[0].longitude }
+            : { lat: 39.90923, lng: 116.397428 },
         });
 
-        markers = validPoints.map((p, idx) => {
-          const marker = new AMap.Marker({
-            position: [p.longitude, p.latitude],
-            title: p.name,
-            label: { content: `${idx + 1}`, direction: "top" },
-          });
-          marker.setMap(map);
-          return marker;
-        });
+        markers = validPoints.map(
+          (p, idx) =>
+            new Marker({
+              position: { lat: p.latitude, lng: p.longitude },
+              map,
+              title: p.name,
+              label: `${idx + 1}`,
+            })
+        );
 
         if (validPoints.length > 1) {
-          map.setFitView();
+          const lats = validPoints.map((p) => p.latitude);
+          const lngs = validPoints.map((p) => p.longitude);
+          map.fitBounds({
+            north: Math.max(...lats),
+            south: Math.min(...lats),
+            east: Math.max(...lngs),
+            west: Math.min(...lngs),
+          });
         }
       })
       .catch(() => {
-        // 고덕지도 키가 없거나 로드에 실패해도 나머지 기능은 그대로 동작해야 한다.
+        // 구글맵 키가 없거나 로드에 실패해도 나머지 기능은 그대로 동작해야 한다.
       });
 
     return () => {
       destroyed = true;
       markers.forEach((m) => m.setMap(null));
-      map?.destroy();
     };
   }, [points]);
 
