@@ -326,6 +326,7 @@ export interface Database {
           actual_price_cny: number | null;
           scheduled_at: string | null;
           memo: string | null;
+          image_url: string | null;
           status: BucketListStatus;
           created_at: string;
           updated_at: string;

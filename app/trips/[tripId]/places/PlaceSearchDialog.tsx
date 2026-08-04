@@ -71,7 +71,7 @@ export function PlaceSearchDialog({
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-xl rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">장소 검색</h2>
@@ -125,25 +125,30 @@ export function PlaceSearchDialog({
                   <p className="mt-0.5 truncate text-xs text-zinc-400">{place.category}</p>
                 )}
               </div>
-              <div className="flex gap-2">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave(place);
+                }}
+                className="flex gap-2"
+              >
                 <input
                   value={nameKoByPlaceId[place.placeId] ?? ""}
                   onChange={(e) =>
                     setNameKoByPlaceId((prev) => ({ ...prev, [place.placeId]: e.target.value }))
                   }
                   disabled={savedIds.has(place.placeId)}
-                  placeholder="한국어 이름 (선택)"
+                  placeholder="한국어 이름 (선택, 엔터로 저장)"
                   className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
                 />
                 <button
-                  type="button"
+                  type="submit"
                   disabled={savedIds.has(place.placeId)}
-                  onClick={() => handleSave(place)}
                   className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
                 >
                   {savedIds.has(place.placeId) ? "저장됨" : "저장"}
                 </button>
-              </div>
+              </form>
             </li>
           ))}
         </ul>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { uploadItemImage } from "@/lib/storage";
 import type { PurchaseType } from "@/lib/types";
 
 type Member = { userId: string; nickname: string };
@@ -19,35 +20,44 @@ export function AddShoppingItemDialog({
   places: PlaceOption[];
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [saving, setSaving] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSaving(true);
-    const formData = new FormData(e.currentTarget);
-    const supabase = createClient();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
     const quantity = Number(formData.get("quantity") ?? 1) || 1;
     const expectedPrice = formData.get("expected_price_cny");
     const assignedTo = String(formData.get("assigned_to") ?? "");
     const placeId = String(formData.get("place_id") ?? "");
+    const productName = String(formData.get("product_name") ?? "");
+    const productNameZh = String(formData.get("product_name_zh") ?? "") || null;
+    const referenceUrl = String(formData.get("reference_url") ?? "") || null;
+    const purchaseType = formData.get("purchase_type") as PurchaseType;
+    const imageFile = formData.get("image") as File | null;
 
-    await supabase.from("shopping_items").insert({
-      shopping_list_id: shoppingListId,
-      created_by: currentUserId,
-      product_name: String(formData.get("product_name") ?? ""),
-      product_name_zh: String(formData.get("product_name_zh") ?? "") || null,
-      quantity,
-      expected_price_cny: expectedPrice ? Number(expectedPrice) : null,
-      assigned_to: assignedTo || null,
-      place_id: placeId || null,
-      reference_url: String(formData.get("reference_url") ?? "") || null,
-      purchase_type: formData.get("purchase_type") as PurchaseType,
-    });
-
-    setSaving(false);
-    e.currentTarget.reset();
+    // 응답을 기다리지 않고 팝업을 바로 닫는다. 업로드/저장은 백그라운드에서 진행되고,
+    // 완료되면 실시간 구독을 통해 목록에 반영된다.
+    form.reset();
     dialogRef.current?.close();
+
+    void (async () => {
+      const imageUrl = imageFile ? await uploadItemImage(imageFile) : null;
+      const supabase = createClient();
+      await supabase.from("shopping_items").insert({
+        shopping_list_id: shoppingListId,
+        created_by: currentUserId,
+        product_name: productName,
+        product_name_zh: productNameZh,
+        quantity,
+        expected_price_cny: expectedPrice ? Number(expectedPrice) : null,
+        assigned_to: assignedTo || null,
+        place_id: placeId || null,
+        reference_url: referenceUrl,
+        purchase_type: purchaseType,
+        image_url: imageUrl,
+      });
+    })();
   }
 
   return (
@@ -61,7 +71,7 @@ export function AddShoppingItemDialog({
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-sm rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-lg rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
       >
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">쇼핑 항목 추가</h2>
@@ -130,6 +140,16 @@ export function AddShoppingItemDialog({
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">상품 사진 (선택)</label>
+            <input
+              name="image"
+              type="file"
+              accept="image/*"
+              className="block w-full text-sm text-zinc-600 dark:text-zinc-300"
+            />
+          </div>
+
           <div className="flex gap-3 text-sm">
             <label className="flex items-center gap-1.5">
               <input type="radio" name="purchase_type" value="group" defaultChecked /> 공동 구매
@@ -149,8 +169,7 @@ export function AddShoppingItemDialog({
             </button>
             <button
               type="submit"
-              disabled={saving}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-900"
             >
               추가
             </button>
