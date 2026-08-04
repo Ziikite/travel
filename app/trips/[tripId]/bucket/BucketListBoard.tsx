@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTrip } from "@/lib/trip-context";
-import type { BucketListItem, BucketListStatus } from "@/lib/types";
+import type { BucketListItem, BucketListStatus, Place } from "@/lib/types";
 import { AddBucketListItemDialog } from "./AddBucketListItemDialog";
 import { BucketListItemRow } from "./BucketListItemRow";
 
@@ -16,7 +16,7 @@ export function BucketListBoard({
   currentUserId,
   initialItems,
   memberNicknames,
-  places,
+  places: initialPlaces,
 }: {
   tripId: string;
   bucketListId: string | null;
@@ -25,9 +25,9 @@ export function BucketListBoard({
   memberNicknames: Member[];
   places: PlaceOption[];
 }) {
-  void tripId;
   const { role } = useTrip();
   const [items, setItems] = useState<BucketListItem[]>(initialItems);
+  const [places, setPlaces] = useState<PlaceOption[]>(initialPlaces);
   const [statusFilter, setStatusFilter] = useState<"all" | BucketListStatus>("all");
 
   const nicknameByUserId = useMemo(() => {
@@ -74,6 +74,34 @@ export function BucketListBoard({
       supabase.removeChannel(channel);
     };
   }, [bucketListId]);
+
+  // 장소 탭에서 새로 저장한 장소가 바로 반영되게 동기화한다.
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`bucket-places-${tripId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "places", filter: `trip_id=eq.${tripId}` },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as Place;
+
+          setPlaces((prev) => {
+            if (payload.eventType === "DELETE" || row.status !== "active") {
+              return prev.filter((p) => p.id !== row.id);
+            }
+            const option: PlaceOption = { id: row.id, name_zh: row.name_zh };
+            const exists = prev.some((p) => p.id === row.id);
+            return exists ? prev.map((p) => (p.id === row.id ? option : p)) : [...prev, option];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tripId]);
 
   const visibleItems = items
     .filter((item) => statusFilter === "all" || item.status === statusFilter)

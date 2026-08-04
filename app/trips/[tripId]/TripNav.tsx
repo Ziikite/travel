@@ -9,6 +9,7 @@ const TABS = [
   { href: "/itinerary", label: "일정" },
   { href: "/shopping", label: "쇼핑리스트" },
   { href: "/bucket", label: "버킷리스트" },
+  { href: "/notes", label: "기타 정보" },
   { href: "/settings", label: "설정" },
 ];
 

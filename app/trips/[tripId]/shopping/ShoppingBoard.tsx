@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTrip } from "@/lib/trip-context";
-import type { PurchaseType, ShoppingItem, ShoppingStatus } from "@/lib/types";
+import type { Place, PurchaseType, ShoppingItem, ShoppingStatus } from "@/lib/types";
 import { AddShoppingItemDialog } from "./AddShoppingItemDialog";
 import { ShoppingItemRow } from "./ShoppingItemRow";
 
@@ -16,7 +16,7 @@ export function ShoppingBoard({
   currentUserId,
   initialItems,
   memberNicknames,
-  places,
+  places: initialPlaces,
 }: {
   tripId: string;
   shoppingListId: string | null;
@@ -25,9 +25,9 @@ export function ShoppingBoard({
   memberNicknames: Member[];
   places: PlaceOption[];
 }) {
-  void tripId;
   const { role } = useTrip();
   const [items, setItems] = useState<ShoppingItem[]>(initialItems);
+  const [places, setPlaces] = useState<PlaceOption[]>(initialPlaces);
   const [statusFilter, setStatusFilter] = useState<"all" | ShoppingStatus>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | PurchaseType>("all");
 
@@ -76,6 +76,34 @@ export function ShoppingBoard({
     };
   }, [shoppingListId]);
 
+  // 장소 탭에서 새로 저장하거나 이 화면의 "새 장소 추가"로 만든 장소가 바로 반영되게 동기화한다.
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`shopping-places-${tripId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "places", filter: `trip_id=eq.${tripId}` },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as Place;
+
+          setPlaces((prev) => {
+            if (payload.eventType === "DELETE" || row.status !== "active") {
+              return prev.filter((p) => p.id !== row.id);
+            }
+            const option: PlaceOption = { id: row.id, name_zh: row.name_zh };
+            const exists = prev.some((p) => p.id === row.id);
+            return exists ? prev.map((p) => (p.id === row.id ? option : p)) : [...prev, option];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tripId]);
+
   const visibleItems = items.filter((item) => {
     if (statusFilter !== "all" && item.status !== statusFilter) return false;
     if (typeFilter !== "all" && item.purchase_type !== typeFilter) return false;
@@ -113,6 +141,7 @@ export function ShoppingBoard({
         </div>
 
         <AddShoppingItemDialog
+          tripId={tripId}
           shoppingListId={shoppingListId}
           currentUserId={currentUserId}
           members={memberNicknames}

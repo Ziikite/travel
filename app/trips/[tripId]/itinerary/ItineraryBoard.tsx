@@ -13,6 +13,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-ki
 import { createClient } from "@/lib/supabase/client";
 import { useTrip } from "@/lib/trip-context";
 import type { Itinerary, ItineraryPlace, Place } from "@/lib/types";
+import { AddShoppingItemDialog } from "../shopping/AddShoppingItemDialog";
 import { ItineraryItemRow } from "./ItineraryItemRow";
 import { TripMap, type MapPoint } from "./TripMap";
 
@@ -24,13 +25,22 @@ function stripEmbed(row: RawItineraryPlace): ItineraryPlace {
   return rest;
 }
 
+function formatLocalDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function buildDateRange(start: string | null, end: string | null): string[] {
   if (!start || !end) return [];
   const dates: string[] = [];
+  // 로컬 시간 기준으로만 계산한다 — toISOString()은 UTC로 변환되면서
+  // UTC+9(한국) 등에서는 자정이 전날로 밀리는 버그가 있었다.
   const cur = new Date(`${start}T00:00:00`);
   const last = new Date(`${end}T00:00:00`);
   while (cur <= last) {
-    dates.push(cur.toISOString().slice(0, 10));
+    dates.push(formatLocalDate(cur));
     cur.setDate(cur.getDate() + 1);
   }
   return dates;
@@ -42,7 +52,10 @@ export function ItineraryBoard({
   tripEndDate,
   initialItineraries,
   initialItineraryPlaces,
-  allPlaces,
+  allPlaces: initialAllPlaces,
+  currentUserId,
+  shoppingListId,
+  memberNicknames,
 }: {
   tripId: string;
   tripStartDate: string | null;
@@ -50,6 +63,9 @@ export function ItineraryBoard({
   initialItineraries: Itinerary[];
   initialItineraryPlaces: RawItineraryPlace[];
   allPlaces: Place[];
+  currentUserId: string;
+  shoppingListId: string | null;
+  memberNicknames: { userId: string; nickname: string }[];
 }) {
   const { role } = useTrip();
   const canEdit = role === "owner" || role === "editor";
@@ -58,6 +74,7 @@ export function ItineraryBoard({
   const [itineraryPlaces, setItineraryPlaces] = useState<ItineraryPlace[]>(
     initialItineraryPlaces.map(stripEmbed)
   );
+  const [allPlaces, setAllPlaces] = useState<Place[]>(initialAllPlaces);
   const [extraDates, setExtraDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [addingPlaceId, setAddingPlaceId] = useState("");
@@ -127,6 +144,21 @@ export function ItineraryBoard({
               return prev.filter((p) => p.id !== row.id);
             }
             return prev;
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "places", filter: `trip_id=eq.${tripId}` },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as Place;
+
+          setAllPlaces((prev) => {
+            if (payload.eventType === "DELETE" || row.status !== "active") {
+              return prev.filter((p) => p.id !== row.id);
+            }
+            const exists = prev.some((p) => p.id === row.id);
+            return exists ? prev.map((p) => (p.id === row.id ? row : p)) : [...prev, row];
           });
         }
       )
@@ -235,31 +267,43 @@ export function ItineraryBoard({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-2">
-        {allDates.map((date) => (
-          <button
-            key={date}
-            type="button"
-            onClick={() => setSelectedDate(date)}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-              date === effectiveSelectedDate
-                ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                : "border border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
-            }`}
-          >
-            {date}
-          </button>
-        ))}
-        {canEdit && (
-          <input
-            type="date"
-            onChange={(e) => {
-              if (!e.target.value) return;
-              setExtraDates((prev) => Array.from(new Set([...prev, e.target.value])));
-              setSelectedDate(e.target.value);
-              e.target.value = "";
-            }}
-            className="rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-500 dark:border-zinc-700"
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {allDates.map((date) => (
+            <button
+              key={date}
+              type="button"
+              onClick={() => setSelectedDate(date)}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium ${
+                date === effectiveSelectedDate
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                  : "border border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+              }`}
+            >
+              {date}
+            </button>
+          ))}
+          {canEdit && (
+            <input
+              type="date"
+              onChange={(e) => {
+                if (!e.target.value) return;
+                setExtraDates((prev) => Array.from(new Set([...prev, e.target.value])));
+                setSelectedDate(e.target.value);
+                e.target.value = "";
+              }}
+              className="rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-500 dark:border-zinc-700"
+            />
+          )}
+        </div>
+
+        {shoppingListId && canEdit && (
+          <AddShoppingItemDialog
+            tripId={tripId}
+            shoppingListId={shoppingListId}
+            currentUserId={currentUserId}
+            members={memberNicknames}
+            places={allPlaces.map((p) => ({ id: p.id, name_zh: p.name_zh }))}
           />
         )}
       </div>

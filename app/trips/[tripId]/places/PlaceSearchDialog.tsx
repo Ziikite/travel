@@ -3,6 +3,15 @@
 import { useRef, useState } from "react";
 import { searchPlaces, type PlaceSearchResult } from "@/lib/maps";
 import { createClient } from "@/lib/supabase/client";
+import type { Priority } from "@/lib/types";
+
+interface Draft {
+  nameKo: string;
+  priority: Priority;
+  memo: string;
+}
+
+const EMPTY_DRAFT: Draft = { nameKo: "", priority: "want", memo: "" };
 
 export function PlaceSearchDialog({
   tripId,
@@ -19,7 +28,15 @@ export function PlaceSearchDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [nameKoByPlaceId, setNameKoByPlaceId] = useState<Record<string, string>>({});
+  const [draftByPlaceId, setDraftByPlaceId] = useState<Record<string, Draft>>({});
+
+  function getDraft(placeId: string): Draft {
+    return draftByPlaceId[placeId] ?? EMPTY_DRAFT;
+  }
+
+  function updateDraft(placeId: string, patch: Partial<Draft>) {
+    setDraftByPlaceId((prev) => ({ ...prev, [placeId]: { ...getDraft(placeId), ...patch } }));
+  }
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +58,7 @@ export function PlaceSearchDialog({
   }
 
   async function handleSave(place: PlaceSearchResult) {
+    const draft = getDraft(place.placeId);
     const supabase = createClient();
     const { error } = await supabase.from("places").insert({
       trip_id: tripId,
@@ -48,12 +66,14 @@ export function PlaceSearchDialog({
       // amap_poi_id 컬럼에 구글맵 place_id를 저장한다(지도 제공자에 무관한 범용 외부 POI 식별자로 취급).
       amap_poi_id: place.placeId,
       name_zh: place.name,
-      name_ko: nameKoByPlaceId[place.placeId]?.trim() || null,
+      name_ko: draft.nameKo.trim() || null,
       address_zh: place.address,
       latitude: place.latitude,
       longitude: place.longitude,
       coordinate_system: "WGS84",
       category: place.category,
+      priority: draft.priority,
+      memo: draft.memo.trim() || null,
     });
     if (!error) {
       setSavedIds((prev) => new Set(prev).add(place.placeId));
@@ -110,47 +130,68 @@ export function PlaceSearchDialog({
           </p>
         )}
 
-        <ul className="mt-4 flex max-h-96 flex-col gap-2 overflow-y-auto">
-          {results.map((place) => (
-            <li
-              key={place.placeId}
-              className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                  {place.name}
-                </p>
-                <p className="truncate text-xs text-zinc-500">{place.address}</p>
-                {place.category && (
-                  <p className="mt-0.5 truncate text-xs text-zinc-400">{place.category}</p>
-                )}
-              </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSave(place);
-                }}
-                className="flex gap-2"
+        <ul className="mt-4 flex max-h-[28rem] flex-col gap-3 overflow-y-auto">
+          {results.map((place) => {
+            const draft = getDraft(place.placeId);
+            const saved = savedIds.has(place.placeId);
+            return (
+              <li
+                key={place.placeId}
+                className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
               >
-                <input
-                  value={nameKoByPlaceId[place.placeId] ?? ""}
-                  onChange={(e) =>
-                    setNameKoByPlaceId((prev) => ({ ...prev, [place.placeId]: e.target.value }))
-                  }
-                  disabled={savedIds.has(place.placeId)}
-                  placeholder="한국어 이름 (선택, 엔터로 저장)"
-                  className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
-                />
-                <button
-                  type="submit"
-                  disabled={savedIds.has(place.placeId)}
-                  className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{place.name}</p>
+                  <p className="mt-0.5 text-xs break-words text-zinc-500">{place.address}</p>
+                  {place.category && (
+                    <p className="mt-0.5 text-xs break-words text-zinc-400">{place.category}</p>
+                  )}
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSave(place);
+                  }}
+                  className="flex flex-col gap-2"
                 >
-                  {savedIds.has(place.placeId) ? "저장됨" : "저장"}
-                </button>
-              </form>
-            </li>
-          ))}
+                  <div className="flex gap-2">
+                    <input
+                      value={draft.nameKo}
+                      onChange={(e) => updateDraft(place.placeId, { nameKo: e.target.value })}
+                      disabled={saved}
+                      placeholder="한국어 이름 (선택)"
+                      className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                    />
+                    <select
+                      value={draft.priority}
+                      onChange={(e) => updateDraft(place.placeId, { priority: e.target.value as Priority })}
+                      disabled={saved}
+                      className="rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                    >
+                      <option value="must">꼭 가기</option>
+                      <option value="want">가고 싶음</option>
+                      <option value="maybe">선택</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      value={draft.memo}
+                      onChange={(e) => updateDraft(place.placeId, { memo: e.target.value })}
+                      disabled={saved}
+                      placeholder="메모 (추천 이유 등, 엔터로 저장)"
+                      className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                    />
+                    <button
+                      type="submit"
+                      disabled={saved}
+                      className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
+                    >
+                      {saved ? "저장됨" : "저장"}
+                    </button>
+                  </div>
+                </form>
+              </li>
+            );
+          })}
         </ul>
       </dialog>
     </>

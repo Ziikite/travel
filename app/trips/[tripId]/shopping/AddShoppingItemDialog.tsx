@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { uploadItemImage } from "@/lib/storage";
 import type { PurchaseType } from "@/lib/types";
@@ -9,17 +9,20 @@ type Member = { userId: string; nickname: string };
 type PlaceOption = { id: string; name_zh: string };
 
 export function AddShoppingItemDialog({
+  tripId,
   shoppingListId,
   currentUserId,
   members,
   places,
 }: {
+  tripId: string;
   shoppingListId: string;
   currentUserId: string;
   members: Member[];
   places: PlaceOption[];
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [addingNewPlace, setAddingNewPlace] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +33,7 @@ export function AddShoppingItemDialog({
     const expectedPrice = formData.get("expected_price_cny");
     const assignedTo = String(formData.get("assigned_to") ?? "");
     const placeId = String(formData.get("place_id") ?? "");
+    const newPlaceName = String(formData.get("new_place_name") ?? "").trim();
     const productName = String(formData.get("product_name") ?? "");
     const productNameZh = String(formData.get("product_name_zh") ?? "") || null;
     const referenceUrl = String(formData.get("reference_url") ?? "") || null;
@@ -39,11 +43,28 @@ export function AddShoppingItemDialog({
     // 응답을 기다리지 않고 팝업을 바로 닫는다. 업로드/저장은 백그라운드에서 진행되고,
     // 완료되면 실시간 구독을 통해 목록에 반영된다.
     form.reset();
+    setAddingNewPlace(false);
     dialogRef.current?.close();
 
     void (async () => {
-      const imageUrl = imageFile ? await uploadItemImage(imageFile) : null;
       const supabase = createClient();
+
+      let resolvedPlaceId = placeId || null;
+      if (newPlaceName) {
+        const { data: newPlace } = await supabase
+          .from("places")
+          .insert({
+            trip_id: tripId,
+            created_by: currentUserId,
+            name_zh: newPlaceName,
+            coordinate_system: "WGS84",
+          })
+          .select("id")
+          .single();
+        resolvedPlaceId = newPlace?.id ?? null;
+      }
+
+      const imageUrl = imageFile ? await uploadItemImage(imageFile) : null;
       await supabase.from("shopping_items").insert({
         shopping_list_id: shoppingListId,
         created_by: currentUserId,
@@ -52,7 +73,7 @@ export function AddShoppingItemDialog({
         quantity,
         expected_price_cny: expectedPrice ? Number(expectedPrice) : null,
         assigned_to: assignedTo || null,
-        place_id: placeId || null,
+        place_id: resolvedPlaceId,
         reference_url: referenceUrl,
         purchase_type: purchaseType,
         image_url: imageUrl,
@@ -119,20 +140,38 @@ export function AddShoppingItemDialog({
             ))}
           </select>
 
-          {places.length > 0 && (
-            <select
-              name="place_id"
-              defaultValue=""
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
-            >
-              <option value="">구매 장소 미정</option>
-              {places.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name_zh}
-                </option>
-              ))}
-            </select>
-          )}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-zinc-500">구매 장소</label>
+              <button
+                type="button"
+                onClick={() => setAddingNewPlace((v) => !v)}
+                className="text-xs text-blue-600 hover:underline"
+              >
+                {addingNewPlace ? "기존 장소에서 선택" : "+ 새 장소 추가"}
+              </button>
+            </div>
+            {addingNewPlace ? (
+              <input
+                name="new_place_name"
+                placeholder="새 장소 이름 (예: 永辉超市)"
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+              />
+            ) : (
+              <select
+                name="place_id"
+                defaultValue=""
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+              >
+                <option value="">구매 장소 미정</option>
+                {places.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name_zh}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
 
           <input
             name="reference_url"

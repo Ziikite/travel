@@ -368,6 +368,41 @@ export interface Database {
           },
         ];
       };
+      info_notes: {
+        Row: {
+          id: string;
+          trip_id: string;
+          created_by: string;
+          title: string;
+          url: string | null;
+          content: string | null;
+          category: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["info_notes"]["Row"]> & {
+          trip_id: string;
+          created_by: string;
+          title: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["info_notes"]["Row"]>;
+        Relationships: [
+          {
+            foreignKeyName: "info_notes_trip_id_fkey";
+            columns: ["trip_id"];
+            isOneToOne: false;
+            referencedRelation: "trips";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "info_notes_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       activity_logs: {
         Row: {
           id: string;
@@ -430,3 +465,4 @@ export type ShoppingItem = Database["public"]["Tables"]["shopping_items"]["Row"]
 export type ActivityLog = Database["public"]["Tables"]["activity_logs"]["Row"];
 export type BucketList = Database["public"]["Tables"]["bucket_lists"]["Row"];
 export type BucketListItem = Database["public"]["Tables"]["bucket_list_items"]["Row"];
+export type InfoNote = Database["public"]["Tables"]["info_notes"]["Row"];
