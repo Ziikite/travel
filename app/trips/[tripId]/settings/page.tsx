@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getTripMembership } from "@/lib/supabase/server";
 import { InviteShareButton } from "./InviteShareButton";
 import { ActivityFeed } from "./ActivityFeed";
 import { updateMemberRole, removeMember } from "./actions";
@@ -14,12 +14,9 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: trip }, { data: members }, { data: activityLogs }] = await Promise.all([
-    supabase.from("trips").select("invite_code").eq("id", tripId).single(),
+  const [user, { trip }, { data: members }, { data: activityLogs }] = await Promise.all([
+    getCurrentUser(),
+    getTripMembership(tripId),
     supabase
       .from("trip_members")
       .select("user_id, role, joined_at, profiles(nickname, profile_image)")

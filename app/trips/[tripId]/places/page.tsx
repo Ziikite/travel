@@ -1,21 +1,18 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getTripMembership } from "@/lib/supabase/server";
 import { PlaceBoard } from "./PlaceBoard";
 
 export default async function PlacesPage(props: PageProps<"/trips/[tripId]/places">) {
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: places }, { data: trip }, { data: members }] = await Promise.all([
+  const [user, { trip }, { data: places }, { data: members }] = await Promise.all([
+    getCurrentUser(),
+    getTripMembership(tripId),
     supabase
       .from("places")
       .select("*")
       .eq("trip_id", tripId)
       .order("created_at", { ascending: false }),
-    supabase.from("trips").select("destination_city").eq("id", tripId).single(),
     supabase.from("trip_members").select("user_id, profiles(nickname)").eq("trip_id", tripId),
   ]);
 

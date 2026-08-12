@@ -1,15 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BucketListBoard } from "./BucketListBoard";
 
 export default async function BucketListPage(props: PageProps<"/trips/[tripId]/bucket">) {
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: bucketList }, { data: members }, { data: places }] = await Promise.all([
+  const [user, { data: bucketList }, { data: members }, { data: places }] = await Promise.all([
+    getCurrentUser(),
     supabase.from("bucket_lists").select("*").eq("trip_id", tripId).limit(1).maybeSingle(),
     supabase.from("trip_members").select("user_id, profiles(nickname)").eq("trip_id", tripId),
     supabase

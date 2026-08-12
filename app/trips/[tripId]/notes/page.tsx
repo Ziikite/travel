@@ -1,15 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { NotesBoard } from "./NotesBoard";
 
 export default async function NotesPage(props: PageProps<"/trips/[tripId]/notes">) {
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: notes }, { data: members }] = await Promise.all([
+  const [user, { data: notes }, { data: members }] = await Promise.all([
+    getCurrentUser(),
     supabase
       .from("info_notes")
       .select("*")

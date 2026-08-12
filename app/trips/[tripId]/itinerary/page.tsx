@@ -1,17 +1,14 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getTripMembership } from "@/lib/supabase/server";
 import { ItineraryBoard } from "./ItineraryBoard";
 
 export default async function ItineraryPage(props: PageProps<"/trips/[tripId]/itinerary">) {
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: trip }, { data: itineraries }, { data: places }, { data: shoppingList }, { data: members }] =
+  const [user, { trip }, { data: itineraries }, { data: places }, { data: shoppingList }, { data: members }] =
     await Promise.all([
-      supabase.from("trips").select("start_date, end_date").eq("id", tripId).single(),
+      getCurrentUser(),
+      getTripMembership(tripId),
       supabase.from("itineraries").select("*").eq("trip_id", tripId).order("itinerary_date"),
       supabase
         .from("places")

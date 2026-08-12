@@ -1,15 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { ShoppingBoard } from "./ShoppingBoard";
 
 export default async function ShoppingPage(props: PageProps<"/trips/[tripId]/shopping">) {
   const { tripId } = await props.params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [{ data: shoppingList }, { data: members }, { data: places }] = await Promise.all([
+  const [user, { data: shoppingList }, { data: members }, { data: places }] = await Promise.all([
+    getCurrentUser(),
     supabase.from("shopping_lists").select("*").eq("trip_id", tripId).limit(1).maybeSingle(),
     supabase.from("trip_members").select("user_id, profiles(nickname)").eq("trip_id", tripId),
     supabase
