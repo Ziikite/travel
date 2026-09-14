@@ -2,8 +2,21 @@
 
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { uploadItemImage } from "@/lib/storage";
 import { DetailDialog } from "@/components/DetailDialog";
 import type { BucketListItem, BucketListStatus, Role } from "@/lib/types";
+
+type Member = { userId: string; nickname: string };
+type PlaceOption = { id: string; name_zh: string };
+
+const CONTACT_METHODS = ["웨이신(위챗)", "따종디엔핑", "전화", "현장 예약", "기타"];
+
+function toDatetimeLocalValue(value: string | null): string {
+  if (!value) return "";
+  const d = new Date(value);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 const STATUS_LABEL: Record<BucketListStatus, string> = {
   pending: "예약 전",
@@ -35,15 +48,20 @@ export function BucketListItemRow({
   creatorNickname,
   assigneeNickname,
   placeName,
+  members,
+  places,
 }: {
   item: BucketListItem;
   role: Role;
   creatorNickname: string;
   assigneeNickname: string | null;
   placeName: string | null;
+  members: Member[];
+  places: PlaceOption[];
 }) {
   const canEdit = role === "owner" || role === "editor";
   const [actualPrice, setActualPrice] = useState(item.actual_price_cny?.toString() ?? "");
+  const [editing, setEditing] = useState(false);
   const detailRef = useRef<HTMLDialogElement>(null);
 
   async function updateStatus(status: BucketListStatus) {
@@ -84,7 +102,7 @@ export function BucketListItemRow({
             </span>
           </div>
 
-          <div className="mt-1 flex flex-wrap gap-3 text-xs text-zinc-500">
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
             {placeName && <span>📍 {placeName}</span>}
             {item.scheduled_at && <span>🕒 {formatScheduledAt(item.scheduled_at)}</span>}
             {item.contact_method && (
@@ -96,7 +114,30 @@ export function BucketListItemRow({
             {item.expected_price_cny != null && <span>예상 ¥{item.expected_price_cny}</span>}
             {assigneeNickname && <span>담당: {assigneeNickname}</span>}
             <span>등록: {creatorNickname}</span>
+            {canEdit && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditing((v) => !v);
+                }}
+                className="hover:underline"
+              >
+                {editing ? "닫기" : "수정"}
+              </button>
+            )}
           </div>
+
+          {editing && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <BucketListItemEditForm
+                item={item}
+                members={members}
+                places={places}
+                onDone={() => setEditing(false)}
+              />
+            </div>
+          )}
 
           {canEdit && item.status === "done" && (
             <div onClick={(e) => e.stopPropagation()} className="mt-2 flex items-center gap-2 text-xs">
@@ -167,5 +208,144 @@ export function BucketListItemRow({
         }
       />
     </>
+  );
+}
+
+function BucketListItemEditForm({
+  item,
+  members,
+  places,
+  onDone,
+}: {
+  item: BucketListItem;
+  members: Member[];
+  places: PlaceOption[];
+  onDone: () => void;
+}) {
+  const [title, setTitle] = useState(item.title);
+  const [contactMethod, setContactMethod] = useState(item.contact_method ?? "");
+  const [contactInfo, setContactInfo] = useState(item.contact_info ?? "");
+  const [expectedPrice, setExpectedPrice] = useState(item.expected_price_cny?.toString() ?? "");
+  const [scheduledAt, setScheduledAt] = useState(toDatetimeLocalValue(item.scheduled_at));
+  const [assignedTo, setAssignedTo] = useState(item.assigned_to ?? "");
+  const [placeId, setPlaceId] = useState(item.place_id ?? "");
+  const [memo, setMemo] = useState(item.memo ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSaving(true);
+    const form = e.currentTarget;
+    const imageFile = new FormData(form).get("image") as File | null;
+
+    const supabase = createClient();
+    const imageUrl = imageFile && imageFile.size > 0 ? await uploadItemImage(imageFile) : undefined;
+
+    await supabase
+      .from("bucket_list_items")
+      .update({
+        title,
+        contact_method: contactMethod || null,
+        contact_info: contactInfo || null,
+        expected_price_cny: expectedPrice ? Number(expectedPrice) : null,
+        scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : null,
+        assigned_to: assignedTo || null,
+        place_id: placeId || null,
+        memo: memo || null,
+        ...(imageUrl !== undefined ? { image_url: imageUrl } : {}),
+      })
+      .eq("id", item.id);
+    setSaving(false);
+    onDone();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="제목"
+        required
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+      />
+      <div className="flex gap-2">
+        <select
+          value={contactMethod}
+          onChange={(e) => setContactMethod(e.target.value)}
+          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        >
+          <option value="">연락 방법 선택</option>
+          {CONTACT_METHODS.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+        <input
+          value={contactInfo}
+          onChange={(e) => setContactInfo(e.target.value)}
+          placeholder="위챗 아이디 / 전화번호 등"
+          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        />
+      </div>
+      <div className="flex gap-2">
+        <input
+          value={expectedPrice}
+          onChange={(e) => setExpectedPrice(e.target.value)}
+          type="number"
+          step="0.01"
+          placeholder="예상 가격(¥)"
+          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        />
+        <input
+          value={scheduledAt}
+          onChange={(e) => setScheduledAt(e.target.value)}
+          type="datetime-local"
+          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        />
+      </div>
+      <select
+        value={assignedTo}
+        onChange={(e) => setAssignedTo(e.target.value)}
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+      >
+        <option value="">담당자 미정</option>
+        {members.map((m) => (
+          <option key={m.userId} value={m.userId}>
+            {m.nickname}
+          </option>
+        ))}
+      </select>
+      <select
+        value={placeId}
+        onChange={(e) => setPlaceId(e.target.value)}
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+      >
+        <option value="">연관 장소 없음</option>
+        {places.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name_zh}
+          </option>
+        ))}
+      </select>
+      <textarea
+        value={memo}
+        onChange={(e) => setMemo(e.target.value)}
+        placeholder="메모"
+        rows={3}
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+      />
+      <div>
+        <label className="mb-1 block text-xs text-zinc-500">사진 교체 (선택)</label>
+        <input name="image" type="file" accept="image/*" className="block w-full text-sm text-zinc-600" />
+      </div>
+      <button
+        type="submit"
+        disabled={saving}
+        className="self-end rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+      >
+        저장
+      </button>
+    </form>
   );
 }
