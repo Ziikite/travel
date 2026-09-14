@@ -124,21 +124,33 @@ export function ItineraryItemRow({
             식사
           </label>
 
-          {place?.latitude && place?.longitude && (
+          {place?.amap_url ? (
             <a
-              href={mapUrl(
-                place.latitude,
-                place.longitude,
-                place.coordinate_system,
-                place.name_zh,
-                place.amap_poi_id
-              )}
+              href={place.amap_url}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-border px-2 py-1 text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
             >
-              {place?.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
+              고덕지도에서 열기
             </a>
+          ) : (
+            place?.latitude &&
+            place?.longitude && (
+              <a
+                href={mapUrl(
+                  place.latitude,
+                  place.longitude,
+                  place.coordinate_system,
+                  place.name_zh,
+                  place.amap_poi_id
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-border px-2 py-1 text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
+              >
+                {place.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
+              </a>
+            )
           )}
           {place?.address_zh && (
             <CopyButton

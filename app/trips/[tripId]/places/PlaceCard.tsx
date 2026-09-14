@@ -177,23 +177,31 @@ export function PlaceCard({
           { label: "등록자", value: creatorNickname },
           {
             label: "지도",
-            value:
-              place.latitude && place.longitude ? (
-                <a
-                  href={mapUrl(
-                    place.latitude,
-                    place.longitude,
-                    place.coordinate_system,
-                    place.name_zh,
-                    place.amap_poi_id
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-ink underline"
-                >
-                  {place.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
-                </a>
-              ) : null,
+            value: place.amap_url ? (
+              <a
+                href={place.amap_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ink underline"
+              >
+                고덕지도에서 열기
+              </a>
+            ) : place.latitude && place.longitude ? (
+              <a
+                href={mapUrl(
+                  place.latitude,
+                  place.longitude,
+                  place.coordinate_system,
+                  place.name_zh,
+                  place.amap_poi_id
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ink underline"
+              >
+                {place.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
+              </a>
+            ) : null,
           },
         ]}
         actions={
@@ -228,6 +236,7 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
   const [latitude, setLatitude] = useState(place.latitude);
   const [longitude, setLongitude] = useState(place.longitude);
   const [amapPoiId, setAmapPoiId] = useState(place.amap_poi_id);
+  const [amapUrl, setAmapUrl] = useState(place.amap_url ?? "");
   const [coordinateSystem, setCoordinateSystem] = useState(place.coordinate_system);
   const [priority, setPriority] = useState<Priority>(place.priority);
   const [category, setCategory] = useState(place.category ?? "");
@@ -261,6 +270,7 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
         latitude,
         longitude,
         amap_poi_id: amapPoiId,
+        amap_url: amapUrl.trim() || null,
         coordinate_system: coordinateSystem,
         priority,
         category: category || null,
@@ -306,6 +316,13 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
         value={nameKo}
         onChange={(e) => setNameKo(e.target.value)}
         placeholder="한국어 이름"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+      />
+      <input
+        value={amapUrl}
+        onChange={(e) => setAmapUrl(e.target.value)}
+        type="url"
+        placeholder="고덕지도 링크 (선택, 고덕지도 앱의 공유 링크를 붙여넣으세요)"
         className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <div className="flex gap-2">

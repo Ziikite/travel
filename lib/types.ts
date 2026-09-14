@@ -85,6 +85,7 @@ export interface Database {
           trip_id: string;
           created_by: string;
           amap_poi_id: string | null;
+          amap_url: string | null;
           name_zh: string;
           name_ko: string | null;
           address_zh: string | null;
