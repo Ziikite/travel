@@ -205,7 +205,10 @@ export function PlaceBoard({
       </div>
 
       {mapPoints.some((p) => p.latitude != null && p.longitude != null) && (
-        <TripMap points={mapPoints} />
+        <div className="flex flex-col gap-1">
+          <TripMap points={mapPoints} numbered={false} />
+          <p className="text-caption text-ink-muted">마커를 누르면 장소 이름이 보여요.</p>
+        </div>
       )}
 
       {visiblePlaces.length === 0 ? (

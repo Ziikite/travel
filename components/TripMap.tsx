@@ -10,7 +10,7 @@ export interface MapPoint {
   latitude: number | null;
 }
 
-export function TripMap({ points }: { points: MapPoint[] }) {
+export function TripMap({ points, numbered = true }: { points: MapPoint[]; numbered?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,11 +36,17 @@ export function TripMap({ points }: { points: MapPoint[] }) {
               : [116.397428, 39.90923],
           });
 
+          const infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) });
+
           const markers = validPoints.map((p, idx) => {
             const marker = new AMap.Marker({
               position: [p.longitude, p.latitude],
               title: p.name,
-              label: { content: `${idx + 1}`, direction: "top" },
+              label: numbered ? { content: `${idx + 1}`, direction: "top" } : undefined,
+            });
+            marker.on("click", () => {
+              infoWindow.setContent(p.name);
+              infoWindow.open(map, marker.getPosition());
             });
             marker.setMap(map);
             return marker;
@@ -55,7 +61,7 @@ export function TripMap({ points }: { points: MapPoint[] }) {
             map.destroy();
           };
         } else {
-          const { Map } = handle.maps;
+          const { Map, InfoWindow } = handle.maps;
           const { Marker } = handle.marker;
 
           const map = new Map(container, {
@@ -65,15 +71,21 @@ export function TripMap({ points }: { points: MapPoint[] }) {
               : { lat: 39.90923, lng: 116.397428 },
           });
 
-          const markers = validPoints.map(
-            (p, idx) =>
-              new Marker({
-                position: { lat: p.latitude, lng: p.longitude },
-                map,
-                title: p.name,
-                label: `${idx + 1}`,
-              })
-          );
+          const infoWindow = new InfoWindow();
+
+          const markers = validPoints.map((p, idx) => {
+            const marker = new Marker({
+              position: { lat: p.latitude, lng: p.longitude },
+              map,
+              title: p.name,
+              label: numbered ? `${idx + 1}` : undefined,
+            });
+            marker.addListener("click", () => {
+              infoWindow.setContent(p.name);
+              infoWindow.open({ anchor: marker, map });
+            });
+            return marker;
+          });
 
           if (validPoints.length > 1) {
             const lats = validPoints.map((p) => p.latitude);
@@ -104,7 +116,7 @@ export function TripMap({ points }: { points: MapPoint[] }) {
       destroyed = true;
       cleanup?.();
     };
-  }, [points]);
+  }, [points, numbered]);
 
   return (
     <div

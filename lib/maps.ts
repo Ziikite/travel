@@ -31,8 +31,20 @@ export interface AMapPlaceSearchInstance {
   ): void;
 }
 
+// 실제로 속성을 읽지 않고 그대로 다시 건네주기만 하는 opaque 핸들이라 unknown으로 둔다.
+export type AMapLngLatInstance = unknown;
+
+export type AMapPixelInstance = unknown;
+
 export interface AMapMarkerInstance {
   setMap(map: AMapMapInstance | null): void;
+  on(event: "click", handler: () => void): void;
+  getPosition(): AMapLngLatInstance;
+}
+
+export interface AMapInfoWindowInstance {
+  setContent(content: string): void;
+  open(map: AMapMapInstance, position: AMapLngLatInstance): void;
 }
 
 export interface AMapMapInstance {
@@ -51,6 +63,8 @@ export interface AMapNamespace {
     title?: string;
     label?: { content: string; direction: string };
   }) => AMapMarkerInstance;
+  InfoWindow: new (opts?: { offset?: AMapPixelInstance }) => AMapInfoWindowInstance;
+  Pixel: new (x: number, y: number) => AMapPixelInstance;
 }
 
 declare global {
