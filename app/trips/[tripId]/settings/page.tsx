@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { createClient, getCurrentUser, getTripMembership } from "@/lib/supabase/server";
 import { InviteShareButton } from "./InviteShareButton";
 import { ActivityFeed } from "./ActivityFeed";
+import { RoleSelect } from "./RoleSelect";
 import { updateMemberRole, removeMember } from "./actions";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -76,19 +77,12 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
 
                 {isOwner && member.role !== "owner" && (
                   <div className="flex items-center gap-2">
-                    <form action={updateMemberRole}>
-                      <input type="hidden" name="trip_id" value={tripId} />
-                      <input type="hidden" name="user_id" value={member.user_id} />
-                      <select
-                        name="role"
-                        defaultValue={member.role}
-                        onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                        className="rounded-lg border border-zinc-300 bg-white px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800"
-                      >
-                        <option value="editor">편집자</option>
-                        <option value="viewer">조회자</option>
-                      </select>
-                    </form>
+                    <RoleSelect
+                      tripId={tripId}
+                      userId={member.user_id}
+                      role={member.role}
+                      action={updateMemberRole}
+                    />
                     <form action={removeMember}>
                       <input type="hidden" name="trip_id" value={tripId} />
                       <input type="hidden" name="user_id" value={member.user_id} />
