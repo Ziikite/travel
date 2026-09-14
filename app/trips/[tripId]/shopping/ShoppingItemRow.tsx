@@ -17,10 +17,10 @@ const STATUS_LABEL: Record<ShoppingStatus, string> = {
 };
 
 const STATUS_STYLE: Record<ShoppingStatus, string> = {
-  pending: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-  purchased: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
-  out_of_stock: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
-  cancelled: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
+  pending: "bg-surface-sunken text-ink-muted dark:bg-zinc-800 dark:text-zinc-400",
+  purchased: "bg-success/10 text-success dark:bg-emerald-950 dark:text-emerald-300",
+  out_of_stock: "bg-danger/10 text-danger dark:bg-amber-950 dark:text-amber-300",
+  cancelled: "bg-danger/10 text-danger dark:bg-red-950 dark:text-red-300",
 };
 
 export function ShoppingItemRow({
@@ -68,7 +68,7 @@ export function ShoppingItemRow({
     <>
       <div
         onClick={() => detailRef.current?.showModal()}
-        className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-zinc-200 p-4 hover:border-zinc-300 dark:border-zinc-800"
+        className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-border p-4 hover:border-border dark:border-zinc-800"
       >
         {item.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -81,24 +81,24 @@ export function ShoppingItemRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-zinc-900 dark:text-zinc-50">
+            <p className="text-body-strong text-ink dark:text-zinc-50">
               {item.product_name}
               {item.quantity > 1 && (
-                <span className="ml-1 text-sm text-zinc-500">× {item.quantity}</span>
+                <span className="ml-1 text-sm text-ink-muted">× {item.quantity}</span>
               )}
             </p>
             {item.product_name_zh && (
-              <span className="text-sm text-zinc-500">({item.product_name_zh})</span>
+              <span className="text-sm text-ink-muted">({item.product_name_zh})</span>
             )}
             <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[item.status]}`}>
               {STATUS_LABEL[item.status]}
             </span>
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800">
+            <span className="rounded-full bg-surface-sunken px-2 py-0.5 text-xs text-ink-muted dark:bg-zinc-800">
               {item.purchase_type === "group" ? "공동구매" : "개인구매"}
             </span>
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
             {placeName && <span>📍 {placeName}</span>}
             {item.expected_price_cny != null && <span>예상 ¥{item.expected_price_cny}</span>}
             {assigneeNickname && <span>담당: {assigneeNickname}</span>}
@@ -133,14 +133,14 @@ export function ShoppingItemRow({
               onClick={(e) => e.stopPropagation()}
               className="mt-2 flex items-center gap-2 text-xs"
             >
-              <span className="text-zinc-500">실제 구매금액(¥)</span>
+              <span className="text-ink-muted">실제 구매금액(¥)</span>
               <input
                 value={actualPrice}
                 onChange={(e) => setActualPrice(e.target.value)}
                 onBlur={saveActualPrice}
                 type="number"
                 step="0.01"
-                className="w-24 rounded-lg border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
+                className="w-24 rounded-lg border border-border px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
               />
             </div>
           )}
@@ -151,7 +151,7 @@ export function ShoppingItemRow({
             <select
               value={item.status}
               onChange={(e) => updateStatus(e.target.value as ShoppingStatus)}
-              className="rounded-lg border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800"
+              className="rounded-lg border border-border px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800"
             >
               <option value="pending">미구매</option>
               <option value="purchased">구매완료</option>
@@ -185,7 +185,7 @@ export function ShoppingItemRow({
           {
             label: "참고 링크",
             value: item.reference_url ? (
-              <a href={item.reference_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              <a href={item.reference_url} target="_blank" rel="noopener noreferrer" className="text-ink underline">
                 {item.reference_url}
               </a>
             ) : null,
@@ -200,7 +200,7 @@ export function ShoppingItemRow({
         ]}
         actions={
           canEdit && (
-            <button type="button" onClick={remove} className="text-sm text-red-500 hover:underline">
+            <button type="button" onClick={remove} className="text-sm text-danger hover:underline">
               삭제
             </button>
           )
@@ -259,19 +259,19 @@ function ShoppingItemEditForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-border pt-3 dark:border-zinc-800">
       <input
         value={productName}
         onChange={(e) => setProductName(e.target.value)}
         placeholder="상품명"
         required
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <input
         value={productNameZh}
         onChange={(e) => setProductNameZh(e.target.value)}
         placeholder="중국어 상품명"
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <div className="flex gap-2">
         <input
@@ -280,7 +280,7 @@ function ShoppingItemEditForm({
           type="number"
           min={1}
           placeholder="수량"
-          className="w-20 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="w-20 rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         />
         <input
           value={expectedPrice}
@@ -288,13 +288,13 @@ function ShoppingItemEditForm({
           type="number"
           step="0.01"
           placeholder="예상 가격(¥)"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         />
       </div>
       <select
         value={assignedTo}
         onChange={(e) => setAssignedTo(e.target.value)}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       >
         <option value="">담당자 미정</option>
         {members.map((m) => (
@@ -306,7 +306,7 @@ function ShoppingItemEditForm({
       <select
         value={placeId}
         onChange={(e) => setPlaceId(e.target.value)}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       >
         <option value="">구매 장소 미정</option>
         {places.map((p) => (
@@ -319,11 +319,11 @@ function ShoppingItemEditForm({
         value={referenceUrl}
         onChange={(e) => setReferenceUrl(e.target.value)}
         placeholder="타오바오·샤오홍슈 링크"
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <div>
-        <label className="mb-1 block text-xs text-zinc-500">사진 교체 (선택)</label>
-        <input name="image" type="file" accept="image/*" className="block w-full text-sm text-zinc-600 dark:text-zinc-300" />
+        <label className="mb-1 block text-xs text-ink-muted">사진 교체 (선택)</label>
+        <input name="image" type="file" accept="image/*" className="block w-full text-sm text-ink-muted dark:text-zinc-300" />
       </div>
       <div className="flex gap-3 text-sm">
         <label className="flex items-center gap-1.5">
@@ -346,7 +346,7 @@ function ShoppingItemEditForm({
       <button
         type="submit"
         disabled={saving}
-        className="self-end rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+        className="self-end rounded-lg bg-primary px-3 py-1.5 text-body-strong text-on-primary disabled:opacity-50 dark:bg-white dark:text-zinc-900"
       >
         저장
       </button>

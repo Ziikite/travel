@@ -15,15 +15,15 @@ export function LoginForm({
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
 
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="mb-6 flex rounded-full bg-zinc-100 p-1 text-sm font-medium dark:bg-zinc-800">
+    <div className="w-full max-w-sm rounded-2xl border border-border bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="mb-6 flex rounded-full bg-surface-sunken p-1 text-sm font-medium dark:bg-zinc-800">
         <button
           type="button"
           onClick={() => setMode("signin")}
           className={`flex-1 rounded-full py-2 transition-colors ${
             mode === "signin"
-              ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-white"
-              : "text-zinc-500"
+              ? "bg-white text-ink shadow-sm dark:bg-zinc-700 dark:text-white"
+              : "text-ink-muted"
           }`}
         >
           로그인
@@ -33,8 +33,8 @@ export function LoginForm({
           onClick={() => setMode("signup")}
           className={`flex-1 rounded-full py-2 transition-colors ${
             mode === "signup"
-              ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-white"
-              : "text-zinc-500"
+              ? "bg-white text-ink shadow-sm dark:bg-zinc-700 dark:text-white"
+              : "text-ink-muted"
           }`}
         >
           회원가입
@@ -42,37 +42,37 @@ export function LoginForm({
       </div>
 
       {error && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+        <p className="mb-4 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger dark:bg-red-950 dark:text-red-300">
           {error}
         </p>
       )}
 
       {mode === "signin" ? (
-        <form action={signIn} className="flex flex-col gap-3">
+        <form action={signIn} className="flex flex-col gap-2">
           <input type="hidden" name="redirect" value={redirectTo} />
           <input
             type="text"
             name="username"
             placeholder="아이디"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <input
             type="password"
             name="password"
             placeholder="비밀번호"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <button
             type="submit"
-            className="mt-2 rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900"
+            className="mt-2 rounded-lg bg-primary py-2.5 text-body-strong text-on-primary hover:bg-primary-hover dark:bg-white dark:text-zinc-900"
           >
             로그인
           </button>
         </form>
       ) : (
-        <form action={signUp} className="flex flex-col gap-3">
+        <form action={signUp} className="flex flex-col gap-2">
           <input type="hidden" name="redirect" value={redirectTo} />
           <input
             type="text"
@@ -80,7 +80,7 @@ export function LoginForm({
             placeholder="아이디 (영문/숫자/밑줄 3~20자)"
             pattern="[a-zA-Z0-9_]{3,20}"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <input
             type="password"
@@ -88,11 +88,11 @@ export function LoginForm({
             placeholder="비밀번호 (6자 이상)"
             required
             minLength={6}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <button
             type="submit"
-            className="mt-2 rounded-lg bg-zinc-900 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900"
+            className="mt-2 rounded-lg bg-primary py-2.5 text-body-strong text-on-primary hover:bg-primary-hover dark:bg-white dark:text-zinc-900"
           >
             회원가입
           </button>

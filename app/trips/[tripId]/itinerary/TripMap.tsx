@@ -109,7 +109,7 @@ export function TripMap({ points }: { points: MapPoint[] }) {
   return (
     <div
       ref={containerRef}
-      className="h-64 w-full rounded-xl bg-zinc-100 text-sm text-zinc-400 dark:bg-zinc-800"
+      className="h-64 w-full rounded-xl bg-surface-sunken text-sm text-ink-muted dark:bg-zinc-800"
     />
   );
 }

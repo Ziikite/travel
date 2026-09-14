@@ -81,7 +81,7 @@ export function NotesBoard({
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="all">분류 전체</option>
             {categories.map((c) => (
@@ -98,7 +98,7 @@ export function NotesBoard({
       </div>
 
       {visibleNotes.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-500">
+        <p className="py-10 text-center text-sm text-ink-muted">
           아직 등록된 정보가 없어요. 유용한 링크나 꿀팁을 추가해보세요.
         </p>
       ) : (

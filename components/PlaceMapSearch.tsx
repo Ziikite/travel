@@ -36,19 +36,19 @@ export function PlaceMapSearch({
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="가게 이름으로 검색 (예: 火锅)"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         />
         <button
           type="submit"
           disabled={loading}
-          className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+          className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-body-strong text-on-primary disabled:opacity-50 dark:bg-white dark:text-zinc-900"
         >
           {loading ? "검색 중..." : "검색"}
         </button>
       </form>
 
       {error && (
-        <p className="rounded-lg bg-red-50 px-2 py-1.5 text-xs text-red-700 dark:bg-red-950 dark:text-red-300">
+        <p className="rounded-lg bg-danger/10 px-2 py-1.5 text-xs text-danger dark:bg-red-950 dark:text-red-300">
           {error}
         </p>
       )}
@@ -60,11 +60,11 @@ export function PlaceMapSearch({
               <button
                 type="button"
                 onClick={() => onSelect(place)}
-                className="w-full rounded-lg border border-zinc-200 p-2 text-left text-xs hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500"
+                className="w-full rounded-lg border border-border p-2 text-left text-xs hover:border-border dark:border-zinc-700 dark:hover:border-zinc-500"
               >
-                <p className="font-medium text-zinc-900 dark:text-zinc-50">{place.name}</p>
-                <p className="text-zinc-500">{place.address}</p>
-                {place.category && <p className="text-zinc-400">{place.category}</p>}
+                <p className="font-medium text-ink dark:text-zinc-50">{place.name}</p>
+                <p className="text-ink-muted">{place.address}</p>
+                {place.category && <p className="text-ink-muted">{place.category}</p>}
               </button>
             </li>
           ))}

@@ -45,36 +45,36 @@ export function AddNoteDialog({ tripId, currentUserId }: { tripId: string; curre
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="rounded-full bg-primary px-4 py-2 text-body-strong text-on-primary transition-colors hover:bg-primary-hover dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         + 정보 추가
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-lg rounded-2xl border border-border p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">기타 정보 추가</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+          <h2 className="text-section-title text-ink dark:text-zinc-50">기타 정보 추가</h2>
 
           <input
             name="title"
             placeholder="제목 (예: 지하철 앱 추천)"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
           <input
             name="url"
             type="url"
             placeholder="관련 링크 (선택, https://...)"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
           <input
             name="category"
             list="note-category-suggestions"
             placeholder="분류 (선택, 예: 교통/환전/꿀팁)"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <datalist id="note-category-suggestions">
             {CATEGORY_SUGGESTIONS.map((c) => (
@@ -86,20 +86,20 @@ export function AddNoteDialog({ tripId, currentUserId }: { tripId: string; curre
             name="content"
             placeholder="내용 (꿀팁, 설명 등)"
             rows={4}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
           <div className="mt-2 flex justify-end gap-2">
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              className="rounded-lg px-4 py-2 text-sm text-zinc-500"
+              className="rounded-lg px-4 py-2 text-sm text-ink-muted"
             >
               취소
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-900"
+              className="rounded-lg bg-primary px-4 py-2 text-body-strong text-on-primary dark:bg-white dark:text-zinc-900"
             >
               추가
             </button>

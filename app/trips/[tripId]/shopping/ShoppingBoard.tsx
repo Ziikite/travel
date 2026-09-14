@@ -113,7 +113,7 @@ export function ShoppingBoard({
   });
 
   if (!shoppingListId) {
-    return <p className="py-10 text-center text-sm text-zinc-500">쇼핑리스트를 불러올 수 없어요.</p>;
+    return <p className="py-10 text-center text-sm text-ink-muted">쇼핑리스트를 불러올 수 없어요.</p>;
   }
 
   return (
@@ -123,7 +123,7 @@ export function ShoppingBoard({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as "all" | ShoppingStatus)}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="all">상태 전체</option>
             <option value="pending">미구매</option>
@@ -134,7 +134,7 @@ export function ShoppingBoard({
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as "all" | PurchaseType)}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="all">구매유형 전체</option>
             <option value="group">공동구매</option>
@@ -153,7 +153,7 @@ export function ShoppingBoard({
       </div>
 
       {visibleItems.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-500">아직 쇼핑 항목이 없어요.</p>
+        <p className="py-10 text-center text-sm text-ink-muted">아직 쇼핑 항목이 없어요.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {visibleItems.map((item) => (

@@ -39,6 +39,12 @@ yarn-error.log*
 # local tool/session state (not project source)
 .omc
 
+# oh-my-design CLI install (generic skill/agent tooling, not project source)
+.agents/
+.claude/
+.codex/
+.cursor/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

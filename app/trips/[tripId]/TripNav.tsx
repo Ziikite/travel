@@ -19,10 +19,10 @@ export function TripNav() {
   const base = `/trips/${tripId}`;
 
   return (
-    <div className="border-b border-zinc-200 dark:border-zinc-800">
+    <div className="border-b border-border dark:border-zinc-800">
       <div className="mx-auto max-w-5xl px-6 pt-6">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{trip.title}</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-page-title text-ink dark:text-zinc-50">{trip.title}</h1>
+        <p className="mt-1 text-sm text-ink-muted">
           {trip.destination_city ?? "목적지 미정"}
           {trip.start_date && trip.end_date ? ` · ${trip.start_date} ~ ${trip.end_date}` : ""}
         </p>
@@ -37,8 +37,8 @@ export function TripNav() {
                 href={href}
                 className={`shrink-0 whitespace-nowrap border-b-2 pb-3 ${
                   active
-                    ? "border-zinc-900 text-zinc-900 dark:border-zinc-50 dark:text-zinc-50"
-                    : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300"
+                    ? "border-primary text-ink dark:border-zinc-50 dark:text-zinc-50"
+                    : "border-transparent text-ink-muted hover:text-ink dark:hover:text-zinc-300"
                 }`}
               >
                 {tab.label}

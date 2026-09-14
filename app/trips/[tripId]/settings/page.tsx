@@ -45,20 +45,20 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
   return (
     <div className="flex flex-col gap-8">
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-section-title text-ink dark:text-zinc-50">
           초대 링크
         </h2>
         <InviteShareButton url={inviteUrl} />
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-ink-muted">
           이 링크를 아는 사람은 누구나 로그인 후 여행방에 참여할 수 있어요(편집자 권한).
         </p>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 className="mb-3 text-section-title text-ink dark:text-zinc-50">
           멤버 ({members?.length ?? 0})
         </h2>
-        <ul className="flex flex-col divide-y divide-zinc-200 rounded-xl border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+        <ul className="flex flex-col divide-y divide-border rounded-xl border border-border dark:divide-zinc-800 dark:border-zinc-800">
           {members?.map((member) => {
             const profile = Array.isArray(member.profiles)
               ? member.profiles[0]
@@ -66,13 +66,13 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
             return (
               <li key={member.user_id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <p className="text-sm font-medium text-ink dark:text-zinc-50">
                     {profile?.nickname ?? "알 수 없음"}
                     {member.user_id === user?.id && (
-                      <span className="ml-1 text-xs text-zinc-400">(나)</span>
+                      <span className="ml-1 text-xs text-ink-muted">(나)</span>
                     )}
                   </p>
-                  <p className="text-xs text-zinc-500">{ROLE_LABEL[member.role] ?? member.role}</p>
+                  <p className="text-xs text-ink-muted">{ROLE_LABEL[member.role] ?? member.role}</p>
                 </div>
 
                 {isOwner && member.role !== "owner" && (
@@ -86,7 +86,7 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
                     <form action={removeMember}>
                       <input type="hidden" name="trip_id" value={tripId} />
                       <input type="hidden" name="user_id" value={member.user_id} />
-                      <button type="submit" className="text-xs text-red-500 hover:underline">
+                      <button type="submit" className="text-xs text-danger hover:underline">
                         내보내기
                       </button>
                     </form>
@@ -99,7 +99,7 @@ export default async function TripSettingsPage(props: PageProps<"/trips/[tripId]
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">최근 활동</h2>
+        <h2 className="mb-3 text-section-title text-ink dark:text-zinc-50">최근 활동</h2>
         <ActivityFeed tripId={tripId} initialLogs={activityLogs ?? []} memberNicknames={memberNicknames} />
       </section>
     </div>

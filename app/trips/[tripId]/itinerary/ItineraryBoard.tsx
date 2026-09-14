@@ -278,8 +278,8 @@ export function ItineraryBoard({
               onClick={() => setSelectedDate(date)}
               className={`rounded-full px-3 py-1.5 text-sm font-medium ${
                 date === effectiveSelectedDate
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                  : "border border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+                  ? "bg-primary text-on-primary dark:bg-white dark:text-zinc-900"
+                  : "border border-border text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
               }`}
             >
               {date}
@@ -294,7 +294,7 @@ export function ItineraryBoard({
                 setSelectedDate(e.target.value);
                 e.target.value = "";
               }}
-              className="rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-500 dark:border-zinc-700"
+              className="rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-ink-muted dark:border-zinc-700"
             />
           )}
         </div>
@@ -312,7 +312,7 @@ export function ItineraryBoard({
       </div>
 
       {!effectiveSelectedDate ? (
-        <p className="py-10 text-center text-sm text-zinc-500">날짜를 추가해서 일정을 시작해보세요.</p>
+        <p className="py-10 text-center text-sm text-ink-muted">날짜를 추가해서 일정을 시작해보세요.</p>
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="flex flex-col gap-3">
@@ -321,7 +321,7 @@ export function ItineraryBoard({
                 <select
                   value={addingPlaceId}
                   onChange={(e) => setAddingPlaceId(e.target.value)}
-                  className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+                  className="flex-1 rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
                 >
                   <option value="">이 날짜에 추가할 장소 선택...</option>
                   {availablePlaces.map((p) => (
@@ -334,7 +334,7 @@ export function ItineraryBoard({
                   type="button"
                   onClick={handleAddPlace}
                   disabled={!addingPlaceId}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
+                  className="rounded-lg bg-primary px-4 py-2 text-body-strong text-on-primary disabled:opacity-40 dark:bg-white dark:text-zinc-900"
                 >
                   추가
                 </button>
@@ -342,7 +342,7 @@ export function ItineraryBoard({
             )}
 
             {dayItems.length === 0 ? (
-              <p className="py-10 text-center text-sm text-zinc-500">
+              <p className="py-10 text-center text-sm text-ink-muted">
                 이 날짜에 배치된 장소가 없어요.
               </p>
             ) : (

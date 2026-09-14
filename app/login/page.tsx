@@ -8,8 +8,8 @@ export default async function LoginPage(props: PageProps<"/login">) {
   const error = typeof searchParams.error === "string" ? searchParams.error : undefined;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 px-6 py-16 dark:bg-black">
-      <h1 className="mb-8 text-xl font-bold text-zinc-900 dark:text-zinc-50">
+    <div className="flex flex-1 flex-col items-center justify-center bg-surface-sunken px-6 py-16 dark:bg-black">
+      <h1 className="mb-8 text-page-title text-ink dark:text-zinc-50">
         중국 여행 공동 플래너
       </h1>
       <LoginForm initialMode={mode} redirectTo={redirectTo} error={error} />

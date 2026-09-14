@@ -113,7 +113,7 @@ export function BucketListBoard({
     });
 
   if (!bucketListId) {
-    return <p className="py-10 text-center text-sm text-zinc-500">버킷리스트를 불러올 수 없어요.</p>;
+    return <p className="py-10 text-center text-sm text-ink-muted">버킷리스트를 불러올 수 없어요.</p>;
   }
 
   return (
@@ -122,7 +122,7 @@ export function BucketListBoard({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as "all" | BucketListStatus)}
-          className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-sm"
+          className="rounded-lg border border-border bg-white px-2 py-1.5 text-sm"
         >
           <option value="all">상태 전체</option>
           <option value="pending">예약 전</option>
@@ -140,7 +140,7 @@ export function BucketListBoard({
       </div>
 
       {visibleItems.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-500">아직 버킷리스트 항목이 없어요.</p>
+        <p className="py-10 text-center text-sm text-ink-muted">아직 버킷리스트 항목이 없어요.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {visibleItems.map((item) => (

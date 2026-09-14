@@ -89,16 +89,16 @@ export function PlaceSearchDialog({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="rounded-full bg-primary px-4 py-2 text-body-strong text-on-primary transition-colors hover:bg-primary-hover dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         + 장소 검색해서 추가
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-xl rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-xl rounded-2xl border border-border p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">장소 검색</h2>
+          <h2 className="text-section-title text-ink dark:text-zinc-50">장소 검색</h2>
           <button
             type="button"
             onClick={() => {
@@ -106,7 +106,7 @@ export function PlaceSearchDialog({
               setResults([]);
               setKeyword("");
             }}
-            className="text-sm text-zinc-500"
+            className="text-sm text-ink-muted"
           >
             닫기
           </button>
@@ -117,19 +117,19 @@ export function PlaceSearchDialog({
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="예: 洪崖洞, 火锅"
-            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="flex-1 rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-body-strong text-on-primary disabled:opacity-50 dark:bg-white dark:text-zinc-900"
           >
             {loading ? "검색 중..." : "검색"}
           </button>
         </form>
 
         {error && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+          <p className="mt-3 rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger dark:bg-red-950 dark:text-red-300">
             {error}
           </p>
         )}
@@ -141,13 +141,13 @@ export function PlaceSearchDialog({
             return (
               <li
                 key={place.placeId}
-                className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+                className="flex flex-col gap-2 rounded-lg border border-border p-3 dark:border-zinc-800"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{place.name}</p>
-                  <p className="mt-0.5 text-xs break-words text-zinc-500">{place.address}</p>
+                  <p className="text-sm font-medium text-ink dark:text-zinc-50">{place.name}</p>
+                  <p className="mt-0.5 text-xs break-words text-ink-muted">{place.address}</p>
                   {place.category && (
-                    <p className="mt-0.5 text-xs break-words text-zinc-400">{place.category}</p>
+                    <p className="mt-0.5 text-xs break-words text-ink-muted">{place.category}</p>
                   )}
                 </div>
                 <form
@@ -163,13 +163,13 @@ export function PlaceSearchDialog({
                       onChange={(e) => updateDraft(place.placeId, { nameKo: e.target.value })}
                       disabled={saved}
                       placeholder="한국어 이름 (선택)"
-                      className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                      className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
                     />
                     <select
                       value={draft.priority}
                       onChange={(e) => updateDraft(place.placeId, { priority: e.target.value as Priority })}
                       disabled={saved}
-                      className="rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                      className="rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
                     >
                       <option value="must">꼭 가기</option>
                       <option value="want">가고 싶음</option>
@@ -182,12 +182,12 @@ export function PlaceSearchDialog({
                       onChange={(e) => updateDraft(place.placeId, { memo: e.target.value })}
                       disabled={saved}
                       placeholder="메모 (추천 이유 등, 엔터로 저장)"
-                      className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
+                      className="flex-1 rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-800"
                     />
                     <button
                       type="submit"
                       disabled={saved}
-                      className="shrink-0 rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 dark:bg-white dark:text-zinc-900"
+                      className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-body-strong text-on-primary disabled:opacity-40 dark:bg-white dark:text-zinc-900"
                     >
                       {saved ? "저장됨" : "저장"}
                     </button>

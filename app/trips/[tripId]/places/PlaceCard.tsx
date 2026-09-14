@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { CopyButton } from "@/components/CopyButton";
 import { DetailDialog } from "@/components/DetailDialog";
 import { PlaceMapSearch } from "@/components/PlaceMapSearch";
 import { mapUrl } from "@/lib/maps";
@@ -15,9 +16,9 @@ const PRIORITY_LABEL: Record<Priority, string> = {
 };
 
 const PRIORITY_STYLE: Record<Priority, string> = {
-  must: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
-  want: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
-  maybe: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  must: "bg-danger/10 text-danger dark:bg-red-950 dark:text-red-300",
+  want: "bg-surface-sunken text-ink dark:bg-blue-950 dark:text-blue-300",
+  maybe: "bg-surface-sunken text-ink-muted dark:bg-zinc-800 dark:text-zinc-400",
 };
 
 export function PlaceCard({
@@ -63,16 +64,30 @@ export function PlaceCard({
     <>
       <div
         onClick={() => detailRef.current?.showModal()}
-        className="cursor-pointer rounded-xl border border-zinc-200 p-4 hover:border-zinc-300 dark:border-zinc-800"
+        className="cursor-pointer rounded-xl border border-border p-4 hover:border-border dark:border-zinc-800"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="font-semibold text-zinc-900 dark:text-zinc-50">{place.name_zh}</p>
-              {place.name_ko && <p className="text-sm text-zinc-500">({place.name_ko})</p>}
+              <p className="text-body-strong text-ink dark:text-zinc-50">{place.name_zh}</p>
+              {place.name_ko && <p className="text-sm text-ink-muted">({place.name_ko})</p>}
+              <CopyButton
+                value={place.name_zh}
+                label="이름 복사"
+                successMessage="장소 이름을 복사했습니다"
+                className="text-caption text-ink-muted hover:text-ink hover:underline"
+              />
             </div>
             {place.address_zh && (
-              <p className="mt-1 text-sm text-zinc-500">{place.address_zh}</p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <p className="text-body-role text-ink-muted">{place.address_zh}</p>
+                <CopyButton
+                  value={place.address_zh}
+                  label="주소 복사"
+                  successMessage="주소를 복사했습니다"
+                  className="text-caption text-ink-muted hover:text-ink hover:underline"
+                />
+              </div>
             )}
           </div>
 
@@ -85,8 +100,8 @@ export function PlaceCard({
               }}
               className={`flex shrink-0 flex-col items-center rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
                 hasVoted
-                  ? "border-orange-400 bg-orange-50 text-orange-600 dark:bg-orange-950"
-                  : "border-zinc-300 text-zinc-500 dark:border-zinc-700"
+                  ? "border-success bg-success/10 text-success dark:bg-orange-950"
+                  : "border-border text-ink-muted dark:border-zinc-700"
               }`}
             >
               <span>👍 {voteCount}</span>
@@ -99,21 +114,21 @@ export function PlaceCard({
             {PRIORITY_LABEL[place.priority]}
           </span>
           {place.category && (
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+            <span className="rounded-full bg-surface-sunken px-2 py-0.5 text-ink-muted dark:bg-zinc-800 dark:text-zinc-400">
               {place.category.split(";")[0]}
             </span>
           )}
           {place.stay_minutes && (
-            <span className="text-zinc-400">체류 {place.stay_minutes}분</span>
+            <span className="text-ink-muted">체류 {place.stay_minutes}분</span>
           )}
-          {place.opening_hours && <span className="text-zinc-400">{place.opening_hours}</span>}
+          {place.opening_hours && <span className="text-ink-muted">{place.opening_hours}</span>}
         </div>
 
         {place.memo && (
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">💬 {place.memo}</p>
+          <p className="mt-2 text-body-role text-ink-muted dark:text-zinc-400">💬 {place.memo}</p>
         )}
 
-        <div className="mt-3 flex items-center justify-between text-xs text-zinc-400">
+        <div className="mt-3 flex items-center justify-between text-xs text-ink-muted">
           <span>{creatorNickname}님이 등록</span>
 
           {canEdit && !isDeleted && (
@@ -142,7 +157,20 @@ export function PlaceCard({
         title={place.name_zh}
         subtitle={place.name_ko ?? undefined}
         fields={[
-          { label: "주소", value: place.address_zh },
+          {
+            label: "주소",
+            value: place.address_zh ? (
+              <span className="flex flex-wrap items-center gap-2">
+                {place.address_zh}
+                <CopyButton
+                  value={place.address_zh}
+                  label="복사"
+                  successMessage="주소를 복사했습니다"
+                  className="text-caption text-ink-muted hover:text-ink hover:underline"
+                />
+              </span>
+            ) : null,
+          },
           { label: "우선순위", value: PRIORITY_LABEL[place.priority] },
           { label: "카테고리", value: place.category },
           { label: "체류 시간", value: place.stay_minutes ? `${place.stay_minutes}분` : null },
@@ -164,7 +192,7 @@ export function PlaceCard({
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 underline"
+                  className="text-ink underline"
                 >
                   {place.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
                 </a>
@@ -177,7 +205,7 @@ export function PlaceCard({
             <button
               type="button"
               onClick={() => setStatus("active")}
-              className="text-sm text-emerald-600 hover:underline"
+              className="text-sm text-success hover:underline"
             >
               복구
             </button>
@@ -185,7 +213,7 @@ export function PlaceCard({
             <button
               type="button"
               onClick={() => setStatus("deleted")}
-              className="text-sm text-red-500 hover:underline"
+              className="text-sm text-danger hover:underline"
             >
               삭제
             </button>
@@ -249,16 +277,16 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-border pt-3 dark:border-zinc-800">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-ink-muted">
           {addressZh || "주소 정보 없음"}
           {latitude == null && " (지도 위치 없음)"}
         </span>
         <button
           type="button"
           onClick={() => setSearching((v) => !v)}
-          className="shrink-0 text-xs text-blue-600 hover:underline"
+          className="shrink-0 text-xs hover:underline"
         >
           {searching ? "검색 닫기" : "지도에서 다시 검색"}
         </button>
@@ -269,25 +297,25 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
         onChange={(e) => setNameZh(e.target.value)}
         placeholder="중국어 이름"
         required
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <input
         value={addressZh}
         onChange={(e) => setAddressZh(e.target.value)}
         placeholder="주소"
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <input
         value={nameKo}
         onChange={(e) => setNameKo(e.target.value)}
         placeholder="한국어 이름"
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <div className="flex gap-2">
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value as Priority)}
-          className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         >
           <option value="must">꼭 가기</option>
           <option value="want">가고 싶음</option>
@@ -297,33 +325,33 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           placeholder="카테고리"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         />
         <input
           value={stayMinutes}
           onChange={(e) => setStayMinutes(e.target.value)}
           type="number"
           placeholder="체류(분)"
-          className="w-24 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+          className="w-24 rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
         />
       </div>
       <input
         value={openingHours}
         onChange={(e) => setOpeningHours(e.target.value)}
         placeholder="영업시간"
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <textarea
         value={memo}
         onChange={(e) => setMemo(e.target.value)}
         placeholder="메모 (추천 이유 등)"
         rows={3}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
       />
       <button
         type="submit"
         disabled={saving}
-        className="self-end rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+        className="self-end rounded-lg bg-primary px-3 py-1.5 text-body-strong text-on-primary disabled:opacity-50 dark:bg-white dark:text-zinc-900"
       >
         저장
       </button>

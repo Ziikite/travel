@@ -1,0 +1,45 @@
+{
+  "approved": true,
+  "authority": {
+    "identifier": "thingzwell@gmail.com",
+    "role": "project-owner"
+  },
+  "checkpoint_receipt_sha256": "ec2caf7315dd823b23b22087d8e19d7ff1554827461e8768f38e230b7898697f",
+  "destination": {
+    "design_md_sha256": "113d07ed2c9d8b9dad90b1fc8f14b1e7aa4e5afa506732827eed2171ec46b0e8",
+    "system_tree_sha256": "8867778c259ccaefd143d229e1574584d08005e462fc94974321f9cd07219a4a"
+  },
+  "kind": "design-md-core-project-adoption-report",
+  "previous": {
+    "design_md": {
+      "present": false,
+      "sha256": null
+    },
+    "system": {
+      "present": false,
+      "tree_sha256": null
+    }
+  },
+  "project_proof": {
+    "authority_mode": "core-v2-project-system",
+    "pass": true,
+    "profile": "portable-core",
+    "sha256": "9c159b8d1e4fe48df1a1e1fae254ef4c299721a8b85a832a9449044fc702776e"
+  },
+  "recovery": {
+    "action": null,
+    "recovered": false
+  },
+  "report_path": ".omd/adoptions/22b2ee42e83d96ce.json",
+  "schema_version": "2.0.0",
+  "source_package": {
+    "adoption_receipt_sha256": "222b9d2ca60fc1a090cc123ff23fec0edfe6feffcdbc1acd6aa2a2809b705bbe",
+    "coverage_sha256": "95fcec8e9f91a163a940c016d0e0301ec851f84f1795e5a5fae72608b5519c02",
+    "design_md_sha256": "113d07ed2c9d8b9dad90b1fc8f14b1e7aa4e5afa506732827eed2171ec46b0e8",
+    "graph_sha256": "457b3b2591fb154ee9ef9732cc2f9952ad0f860edc4daef179cea16d41099f75",
+    "manifest_sha256": "bfd21cfcdff6261edecfda3a971b8ee35fa04c4e4bd402e10d8081fc3ebda20d",
+    "provenance_sha256": "50d53789192f43290d30da5ae7a05d6b9bb1e44666f19322314c074e52eaa0c4"
+  },
+  "status": "adopted",
+  "transaction_id": "22b2ee42e83d96ce"
+}

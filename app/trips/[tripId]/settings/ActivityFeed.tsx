@@ -62,15 +62,15 @@ export function ActivityFeed({
   }, [tripId]);
 
   if (logs.length === 0) {
-    return <p className="text-sm text-zinc-500">아직 활동 기록이 없어요.</p>;
+    return <p className="text-sm text-ink-muted">아직 활동 기록이 없어요.</p>;
   }
 
   return (
-    <ul className="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+    <ul className="flex flex-col gap-2 text-sm text-ink-muted dark:text-zinc-400">
       {logs.map((log) => (
         <li key={log.id} className="flex items-baseline justify-between gap-3">
           <span>{summarize(log, log.user_id ? nicknameByUserId.get(log.user_id) ?? "알 수 없음" : "알 수 없음")}</span>
-          <span className="shrink-0 text-xs text-zinc-400">
+          <span className="shrink-0 text-xs text-ink-muted">
             {new Date(log.created_at).toLocaleString("ko-KR", {
               month: "numeric",
               day: "numeric",

@@ -26,10 +26,10 @@ const STATUS_LABEL: Record<BucketListStatus, string> = {
 };
 
 const STATUS_STYLE: Record<BucketListStatus, string> = {
-  pending: "bg-zinc-100 text-zinc-600",
-  booked: "bg-blue-100 text-blue-700",
-  done: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-700",
+  pending: "bg-surface-sunken text-ink-muted",
+  booked: "bg-surface-sunken text-ink",
+  done: "bg-success/10 text-success",
+  cancelled: "bg-danger/10 text-danger",
 };
 
 function formatScheduledAt(value: string | null): string | null {
@@ -87,7 +87,7 @@ export function BucketListItemRow({
     <>
       <div
         onClick={() => detailRef.current?.showModal()}
-        className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-zinc-200 p-4 hover:border-zinc-300"
+        className="flex cursor-pointer items-start justify-between gap-3 rounded-xl border border-border p-4 hover:border-border"
       >
         {item.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -96,13 +96,13 @@ export function BucketListItemRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-zinc-900">{item.title}</p>
+            <p className="text-body-strong text-ink">{item.title}</p>
             <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[item.status]}`}>
               {STATUS_LABEL[item.status]}
             </span>
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
             {placeName && <span>📍 {placeName}</span>}
             {item.scheduled_at && <span>🕒 {formatScheduledAt(item.scheduled_at)}</span>}
             {item.contact_method && (
@@ -141,14 +141,14 @@ export function BucketListItemRow({
 
           {canEdit && item.status === "done" && (
             <div onClick={(e) => e.stopPropagation()} className="mt-2 flex items-center gap-2 text-xs">
-              <span className="text-zinc-500">실제 지불금액(¥)</span>
+              <span className="text-ink-muted">실제 지불금액(¥)</span>
               <input
                 value={actualPrice}
                 onChange={(e) => setActualPrice(e.target.value)}
                 onBlur={saveActualPrice}
                 type="number"
                 step="0.01"
-                className="w-24 rounded-lg border border-zinc-300 px-2 py-1"
+                className="w-24 rounded-lg border border-border px-2 py-1"
               />
             </div>
           )}
@@ -159,7 +159,7 @@ export function BucketListItemRow({
             <select
               value={item.status}
               onChange={(e) => updateStatus(e.target.value as BucketListStatus)}
-              className="rounded-lg border border-zinc-300 px-2 py-1 text-xs"
+              className="rounded-lg border border-border px-2 py-1 text-xs"
             >
               <option value="pending">예약 전</option>
               <option value="booked">예약완료</option>
@@ -201,7 +201,7 @@ export function BucketListItemRow({
         ]}
         actions={
           canEdit && (
-            <button type="button" onClick={remove} className="text-sm text-red-500 hover:underline">
+            <button type="button" onClick={remove} className="text-sm text-danger hover:underline">
               삭제
             </button>
           )
@@ -260,19 +260,19 @@ function BucketListItemEditForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-border pt-3 dark:border-zinc-800">
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="제목"
         required
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm"
       />
       <div className="flex gap-2">
         <select
           value={contactMethod}
           onChange={(e) => setContactMethod(e.target.value)}
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm"
         >
           <option value="">연락 방법 선택</option>
           {CONTACT_METHODS.map((m) => (
@@ -285,7 +285,7 @@ function BucketListItemEditForm({
           value={contactInfo}
           onChange={(e) => setContactInfo(e.target.value)}
           placeholder="위챗 아이디 / 전화번호 등"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm"
         />
       </div>
       <div className="flex gap-2">
@@ -295,19 +295,19 @@ function BucketListItemEditForm({
           type="number"
           step="0.01"
           placeholder="예상 가격(¥)"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm"
         />
         <input
           value={scheduledAt}
           onChange={(e) => setScheduledAt(e.target.value)}
           type="datetime-local"
-          className="flex-1 rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+          className="flex-1 rounded-lg border border-border px-2 py-1.5 text-sm"
         />
       </div>
       <select
         value={assignedTo}
         onChange={(e) => setAssignedTo(e.target.value)}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm"
       >
         <option value="">담당자 미정</option>
         {members.map((m) => (
@@ -319,7 +319,7 @@ function BucketListItemEditForm({
       <select
         value={placeId}
         onChange={(e) => setPlaceId(e.target.value)}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm"
       >
         <option value="">연관 장소 없음</option>
         {places.map((p) => (
@@ -333,16 +333,16 @@ function BucketListItemEditForm({
         onChange={(e) => setMemo(e.target.value)}
         placeholder="메모"
         rows={3}
-        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-border px-2 py-1.5 text-sm"
       />
       <div>
-        <label className="mb-1 block text-xs text-zinc-500">사진 교체 (선택)</label>
-        <input name="image" type="file" accept="image/*" className="block w-full text-sm text-zinc-600" />
+        <label className="mb-1 block text-xs text-ink-muted">사진 교체 (선택)</label>
+        <input name="image" type="file" accept="image/*" className="block w-full text-sm text-ink-muted" />
       </div>
       <button
         type="submit"
         disabled={saving}
-        className="self-end rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+        className="self-end rounded-lg bg-primary px-3 py-1.5 text-body-strong text-on-primary disabled:opacity-50"
       >
         저장
       </button>

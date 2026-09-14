@@ -5,8 +5,22 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #191f28;
   color-scheme: light;
+
+  /* DESIGN.md §2 Foundations — semantic tokens (토스 기반) */
+  --color-border: #e5e8eb;
+  --color-danger: #e42939;
+  --color-ink: #191f28;
+  --color-ink-muted: #4e5968;
+  --color-on-primary: #ffffff;
+  --color-primary: #3182f6;
+  --color-primary-hover: #2272eb;
+  --color-success: #047857;
+  --color-surface-sunken: #f2f4f6;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-dialog: 16px;
 }
 
 @theme inline {
@@ -14,13 +28,66 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-border: var(--color-border);
+  --color-danger: var(--color-danger);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-on-primary: var(--color-on-primary);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-success: var(--color-success);
+  --color-surface-sunken: var(--color-surface-sunken);
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-dialog: var(--radius-dialog);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
   overflow-x: hidden;
+}
+
+/* DESIGN.md §3 Typography & Assets — 여섯 개 타입 역할만 쓴다 */
+@utility text-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+@utility text-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+@utility text-body-role {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+@utility text-body-strong {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+@utility text-caption {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+@utility text-numeric {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* DESIGN.md §2 — 모든 상호작용 요소는 focus.ring을 보이게 남긴다 */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* flex/grid 컨테이너 안에서 input/select/textarea가 내용 크기보다 작아지지

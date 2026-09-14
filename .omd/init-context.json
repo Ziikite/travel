@@ -1,0 +1,38 @@
+{
+  "reference_id": "toss",
+  "description": "중국 여행 공동 플래너(china-trip-planner)의 디자인 시스템을 토스(toss) 디자인 가이드를 기반으로 다시 세팅한다. 색 축만 빌리던 이전(jandi 기반) 결정을 대체하고, toss가 제품 표면에서 확인한 색·타입 리듬·여백·반경 값을 이 앱의 밀도에 맞춰 적용한다. 전체 분위기는 깔끔하고 미니멀하게.",
+  "mode": "inspired",
+  "delta_set": {
+    "axes": {
+      "density.shift": -1
+    },
+    "voiceHints": [
+      "깔끔한",
+      "미니멀한",
+      "짧고 사실적인 한국어 문장",
+      "홍보 표현 없이 필요한 정보만"
+    ],
+    "matchedKeywords": [
+      "toss",
+      "fintech",
+      "minimal",
+      "clean",
+      "korean",
+      "mobile-first"
+    ],
+    "warnings": [
+      "색: toss가 제품 표면에서 확인한 값을 그대로 채택했다 — primary #3182f6, primary-hover #2272eb, on-primary #ffffff, danger #e42939. ink #191f28 / ink-muted #4e5968 / border #e5e8eb / surface-sunken #f2f4f6은 toss의 foreground / body / border / surface에서 가져왔다.",
+      "on-primary #ffffff on primary #3182f6의 실측 대비는 3.71:1이다. WCAG AA 비텍스트 UI 기준 3:1은 넘지만 본문 텍스트 기준 4.5:1에는 못 미쳐, 이전에 선언했던 4.5:1 최소값을 3:1로 낮추고 실측값과 대안(#1b64da, 5.41:1)을 Governance에 남겼다.",
+      "danger #e42939의 실측 대비는 4.49:1로 4.5:1에 0.01 못 미친다. 선언 최소값을 4.4:1로 적고 저장소가 쓰던 #dc2626(4.83:1)을 대안으로 기록했다.",
+      "ink-muted는 toss의 muted #8b95a1(흰 바탕 3.04:1)이 아니라 body #4e5968(7.11:1)을 골랐다. 보조 설명과 상태 칩 라벨이 14px 이하라 muted로는 기준을 지킬 수 없었다.",
+      "success 계열 토큰은 toss 레퍼런스에 없다. 이 앱의 구매완료·버킷 완료 상태에 필요하므로 이전 값 #047857을 프로젝트 결정으로 이어 썼다.",
+      "폰트 패밀리는 Geist를 유지했다. app/layout.tsx가 next/font/google로 Geist를 로드하는 저장소 사실이 레퍼런스 선호보다 앞서고, Toss Product Sans는 공개 재배포 권리가 공표되지 않았다.",
+      "타입 크기는 toss의 리듬만 가져왔다 — 줄높이 전 역할 1.5, 제목 무게 700/600, Body 16/400, Body Small 14/400, page-title은 H4 22px. H1 36 / H2 30 같은 큰 단계는 320px 최소 폭과 밀도 규칙에 맞지 않아 가져오지 않았다.",
+      "여백은 space.stack-gap만 12px → 8px(toss md)로 바꿨다. card-padding 16(lg)과 dialog-padding 24(xl)는 이미 toss 척도와 같아 그대로 뒀다.",
+      "반경은 바꾸지 않았다. radius.control 8과 radius.dialog 16은 toss의 button-small / button-xlarge와 같고, radius.card 12는 toss가 카드 기하를 제공하지 않아 저장소 확인값을 유지했다.",
+      "Experience · Components & States · Layout & Platforms · Content & Locales는 실제 앱 컴포넌트에 매인 내용이라 그대로 보존했다. 프로젝트 thesis / tagline / 타겟 segment는 이전 턴에서 사용자가 건너뛴 상태를 유지해 Governance 미해결 경로로만 남아 있다."
+    ]
+  },
+  "bootstrapped_at": "2026-09-14T07:33:29Z",
+  "rebased_at": "2026-09-14T08:41:00Z"
+}

@@ -129,27 +129,27 @@ export function AddShoppingItemDialog({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="rounded-full bg-primary px-4 py-2 text-body-strong text-on-primary transition-colors hover:bg-primary-hover dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         + 상품 추가
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-lg rounded-2xl border border-border p-6 backdrop:bg-black/40 dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">쇼핑 항목 추가</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+          <h2 className="text-section-title text-ink dark:text-zinc-50">쇼핑 항목 추가</h2>
 
           <input
             name="product_name"
             placeholder="상품명 (예: 훠궈 소스)"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
           <input
             name="product_name_zh"
             placeholder="중국어 상품명"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
           <div className="flex gap-2">
@@ -159,21 +159,21 @@ export function AddShoppingItemDialog({
               min={1}
               defaultValue={1}
               placeholder="수량"
-              className="w-20 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+              className="w-20 rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
             />
             <input
               name="expected_price_cny"
               type="number"
               step="0.01"
               placeholder="예상 가격(¥)"
-              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+              className="flex-1 rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
             />
           </div>
 
           <select
             name="assigned_to"
             defaultValue=""
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="">담당자 미정</option>
             {members.map((m) => (
@@ -185,7 +185,7 @@ export function AddShoppingItemDialog({
 
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-zinc-500">구매 장소</label>
+              <label className="text-xs text-ink-muted">구매 장소</label>
               <div className="flex gap-2 text-xs">
                 <button
                   type="button"
@@ -193,14 +193,14 @@ export function AddShoppingItemDialog({
                     setPlaceMode("existing");
                     setSearchedPlace(null);
                   }}
-                  className={placeMode === "existing" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                  className={placeMode === "existing" ? "font-semibold text-primary underline" : "text-ink-muted hover:text-ink hover:underline"}
                 >
                   기존
                 </button>
                 <button
                   type="button"
                   onClick={() => setPlaceMode("search")}
-                  className={placeMode === "search" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                  className={placeMode === "search" ? "font-semibold text-primary underline" : "text-ink-muted hover:text-ink hover:underline"}
                 >
                   지도 검색
                 </button>
@@ -210,7 +210,7 @@ export function AddShoppingItemDialog({
                     setPlaceMode("manual");
                     setSearchedPlace(null);
                   }}
-                  className={placeMode === "manual" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                  className={placeMode === "manual" ? "font-semibold text-primary underline" : "text-ink-muted hover:text-ink hover:underline"}
                 >
                   직접 입력
                 </button>
@@ -221,7 +221,7 @@ export function AddShoppingItemDialog({
               <select
                 name="place_id"
                 defaultValue=""
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+                className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
               >
                 <option value="">구매 장소 미정</option>
                 {places.map((p) => (
@@ -236,21 +236,21 @@ export function AddShoppingItemDialog({
               <input
                 name="new_place_name"
                 placeholder="새 장소 이름 (예: 永辉超市)"
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+                className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
               />
             )}
 
             {placeMode === "search" &&
               (searchedPlace ? (
-                <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700">
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700">
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-zinc-900 dark:text-zinc-50">{searchedPlace.name}</p>
-                    <p className="truncate text-xs text-zinc-500">{searchedPlace.address}</p>
+                    <p className="truncate font-medium text-ink dark:text-zinc-50">{searchedPlace.name}</p>
+                    <p className="truncate text-xs text-ink-muted">{searchedPlace.address}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSearchedPlace(null)}
-                    className="shrink-0 text-xs text-zinc-500 hover:underline"
+                    className="shrink-0 text-xs text-ink-muted hover:underline"
                   >
                     변경
                   </button>
@@ -263,16 +263,16 @@ export function AddShoppingItemDialog({
           <input
             name="reference_url"
             placeholder="타오바오·샤오홍슈 링크"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
           />
 
           <div>
-            <label className="mb-1 block text-xs text-zinc-500">상품 사진 (선택)</label>
+            <label className="mb-1 block text-xs text-ink-muted">상품 사진 (선택)</label>
             <input
               name="image"
               type="file"
               accept="image/*"
-              className="block w-full text-sm text-zinc-600 dark:text-zinc-300"
+              className="block w-full text-sm text-ink-muted dark:text-zinc-300"
             />
           </div>
 
@@ -292,13 +292,13 @@ export function AddShoppingItemDialog({
                 resetPlacePicker();
                 dialogRef.current?.close();
               }}
-              className="rounded-lg px-4 py-2 text-sm text-zinc-500"
+              className="rounded-lg px-4 py-2 text-sm text-ink-muted"
             >
               취소
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-900"
+              className="rounded-lg bg-primary px-4 py-2 text-body-strong text-on-primary dark:bg-white dark:text-zinc-900"
             >
               추가
             </button>

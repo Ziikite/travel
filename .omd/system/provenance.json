@@ -1,0 +1,466 @@
+{
+  "decisions": [
+    {
+      "evidence": [
+        "app/layout.tsx",
+        "AGENTS.md#china-trip-planner"
+      ],
+      "path": "/identity/name",
+      "source_class": "repository-fact",
+      "value": "중국 여행 공동 플래너"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#mode",
+        ".omd/init-context.json#description"
+      ],
+      "path": "/identity/kind",
+      "source_class": "prompt-fact",
+      "value": "project-system"
+    },
+    {
+      "evidence": [
+        "AGENTS.md#purpose",
+        "AGENTS.md#subdirectories",
+        "app/AGENTS.md"
+      ],
+      "path": "/identity/scope",
+      "source_class": "repository-fact",
+      "value": "저장소 china-trip-planner의 웹 UI 전체 — 로그인, 여행 목록, 여행 안의 장소·일정·쇼핑리스트·버킷리스트·기타 정보·설정 화면. 한국어 UI만 다룬다."
+    },
+    {
+      "evidence": [
+        ".claude/data/scripts/validate-project-design-system.cjs",
+        "app/layout.tsx"
+      ],
+      "path": "/projection/locale",
+      "source_class": "agent-proposed-greenfield-decision",
+      "value": "en"
+    },
+    {
+      "evidence": [
+        "AGENTS.md#purpose",
+        "README.md",
+        "lib/AGENTS.md"
+      ],
+      "path": "/experience/summary",
+      "source_class": "repository-fact",
+      "value": "중국으로 가는 단체 여행을 여러 사람이 함께 계획하는 웹앱의 디자인 시스템이다. 여행을 만들고 초대 코드로 동행을 모아, 지도에서 장소를 찾아 저장·투표하고, 날짜별 일정을 함께 짜고, 쇼핑과 버킷 리스트를 나눠 관리한다. 화면의 모든 문장은 한국어이고, 변경은 Supabase Realtime으로 다른 사람 화면에 바로 반영된다."
+    },
+    {
+      "evidence": [
+        "app/trips/CreateTripDialog.tsx",
+        "app/trips/join/[inviteCode]/page.tsx",
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "app/trips/[tripId]/itinerary/ItineraryBoard.tsx",
+        "app/trips/[tripId]/shopping/ShoppingItemRow.tsx",
+        "app/trips/[tripId]/settings/RoleSelect.tsx",
+        "app/trips/[tripId]/settings/ActivityFeed.tsx"
+      ],
+      "path": "/experience/primary_tasks",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/globals.css",
+        "components/DetailDialog.tsx"
+      ],
+      "path": "/experience/design_direction",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "app/globals.css",
+        "AGENTS.md#working-in-this-directory",
+        "lib/AGENTS.md"
+      ],
+      "path": "/experience/principles",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/globals.css",
+        "app/trips/[tripId]/shopping/ShoppingItemRow.tsx"
+      ],
+      "path": "/experience/avoid",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#description",
+        ".omd/init-context.json#delta_set",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/color.primary/$value",
+      "source_class": "prompt-fact",
+      "value": "#3182f6"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/color.primary-hover/$value",
+      "source_class": "prompt-fact",
+      "value": "#2272eb"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/color.on-primary/$value",
+      "source_class": "prompt-fact",
+      "value": "#ffffff"
+    },
+    {
+      "evidence": [
+        "app/globals.css"
+      ],
+      "path": "/foundations/tokens/color.canvas/$value",
+      "source_class": "repository-fact",
+      "value": "#ffffff"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/globals.css"
+      ],
+      "path": "/foundations/tokens/color.ink/$value",
+      "source_class": "prompt-fact",
+      "value": "#191f28"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "components/DetailDialog.tsx"
+      ],
+      "path": "/foundations/tokens/color.ink-muted/$value",
+      "source_class": "prompt-fact",
+      "value": "#4e5968"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "components/DetailDialog.tsx",
+        "app/trips/[tripId]/TripNav.tsx"
+      ],
+      "path": "/foundations/tokens/color.border/$value",
+      "source_class": "prompt-fact",
+      "value": "#e5e8eb"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/login/LoginForm.tsx",
+        "app/trips/[tripId]/shopping/ShoppingItemRow.tsx"
+      ],
+      "path": "/foundations/tokens/color.surface-sunken/$value",
+      "source_class": "prompt-fact",
+      "value": "#f2f4f6"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "components/Toaster.tsx"
+      ],
+      "path": "/foundations/tokens/color.danger/$value",
+      "source_class": "prompt-fact",
+      "value": "#e42939"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/shopping/ShoppingItemRow.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/color.success/$value",
+      "source_class": "agent-proposed-greenfield-decision",
+      "value": "#047857"
+    },
+    {
+      "evidence": [
+        "app/login/LoginForm.tsx",
+        "components/Toaster.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/radius.control/$value",
+      "source_class": "repository-fact",
+      "value": "8px"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx"
+      ],
+      "path": "/foundations/tokens/radius.card/$value",
+      "source_class": "repository-fact",
+      "value": "12px"
+    },
+    {
+      "evidence": [
+        "components/DetailDialog.tsx",
+        "app/login/LoginForm.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/radius.dialog/$value",
+      "source_class": "repository-fact",
+      "value": "16px"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/space.card-padding/$value",
+      "source_class": "repository-fact",
+      "value": "16px"
+    },
+    {
+      "evidence": [
+        "components/DetailDialog.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/foundations/tokens/space.dialog-padding/$value",
+      "source_class": "repository-fact",
+      "value": "24px"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/login/LoginForm.tsx",
+        "components/DetailDialog.tsx"
+      ],
+      "path": "/foundations/tokens/space.stack-gap/$value",
+      "source_class": "prompt-fact",
+      "value": "8px"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/login/LoginForm.tsx",
+        "components/DetailDialog.tsx"
+      ],
+      "path": "/foundations/tokens/focus.ring/$value",
+      "source_class": "prompt-fact",
+      "value": "2px solid #3182f6 with 2px offset"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/globals.css",
+        ".omd/init-context.json#delta_set"
+      ],
+      "path": "/foundations/contrast_pairs",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/trips/[tripId]/itinerary/ItineraryBoard.tsx",
+        "package.json"
+      ],
+      "path": "/foundations/reduced_motion",
+      "source_class": "agent-proposed-greenfield-decision",
+      "value": true
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/globals.css",
+        ".omd/init-context.json#delta_set"
+      ],
+      "path": "/foundations/rules",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/layout.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "app/trips/[tripId]/TripNav.tsx",
+        "components/DetailDialog.tsx",
+        "app/trips/[tripId]/places/PlaceCard.tsx"
+      ],
+      "path": "/typography_assets/roles",
+      "source_class": "prompt-fact"
+    },
+    {
+      "evidence": [
+        "app/layout.tsx",
+        ".omd/init-context.json#delta_set"
+      ],
+      "path": "/typography_assets/assets",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/layout.tsx",
+        "app/globals.css",
+        ".claude/data/references/toss/DESIGN.md#toss",
+        "lib/types.ts",
+        "app/trips/[tripId]/places/PlaceCard.tsx"
+      ],
+      "path": "/typography_assets/rules",
+      "source_class": "prompt-fact"
+    },
+    {
+      "evidence": [
+        "app/login/LoginForm.tsx",
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "app/trips/[tripId]/shopping/ShoppingItemRow.tsx",
+        "app/trips/[tripId]/shopping/AddShoppingItemDialog.tsx",
+        "components/DetailDialog.tsx",
+        "app/trips/[tripId]/TripNav.tsx",
+        "components/Toaster.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/components_states/components",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "lib/toast.ts",
+        "components/Toaster.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/components_states/rules",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/globals.css"
+      ],
+      "path": "/layout_platforms/minimum_width_px",
+      "source_class": "agent-proposed-greenfield-decision",
+      "value": 320
+    },
+    {
+      "evidence": [
+        "app/globals.css"
+      ],
+      "path": "/layout_platforms/reflow_zoom_percent",
+      "source_class": "agent-proposed-greenfield-decision",
+      "value": 200
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/TripNav.tsx",
+        "components/DetailDialog.tsx",
+        "app/globals.css"
+      ],
+      "path": "/layout_platforms/rules",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        "AGENTS.md#for-ai-agents",
+        "AGENTS.md#common-patterns",
+        "app/globals.css",
+        "app/AGENTS.md"
+      ],
+      "path": "/layout_platforms/platforms/0/rules",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        "app/trips/[tripId]/shopping/AddShoppingItemDialog.tsx",
+        "components/DetailDialog.tsx",
+        "app/login/LoginForm.tsx"
+      ],
+      "path": "/content_locales/voice",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/TripNav.tsx",
+        "lib/types.ts",
+        "README.md"
+      ],
+      "path": "/content_locales/terminology",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        "app/layout.tsx",
+        "lib/types.ts",
+        "app/trips/[tripId]/TripNav.tsx"
+      ],
+      "path": "/content_locales/locales/0",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        "lib/maps.ts",
+        "lib/AGENTS.md"
+      ],
+      "path": "/content_locales/locales/1",
+      "source_class": "repository-fact"
+    },
+    {
+      "evidence": [
+        "AGENTS.md#for-ai-agents",
+        ".omd/init-context.json#mode"
+      ],
+      "path": "/governance/priority",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        ".claude/data/references/toss/DESIGN.md#toss",
+        ".omd/init-context.json#mode"
+      ],
+      "path": "/governance/change_policy",
+      "source_class": "agent-proposed-greenfield-decision"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        "AGENTS.md#purpose"
+      ],
+      "path": "/experience/brand_thesis",
+      "source_class": "unresolved"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        "app/layout.tsx"
+      ],
+      "path": "/experience/tagline",
+      "source_class": "unresolved"
+    },
+    {
+      "evidence": [
+        ".omd/init-context.json#delta_set",
+        "lib/types.ts"
+      ],
+      "path": "/experience/target_segments",
+      "source_class": "unresolved"
+    },
+    {
+      "evidence": [
+        "app/layout.tsx",
+        "package.json"
+      ],
+      "path": "/typography_assets/font_license_evidence",
+      "source_class": "unresolved"
+    },
+    {
+      "evidence": [
+        "app/trips/[tripId]/places/PlaceCard.tsx",
+        ".claude/data/references/toss/DESIGN.md#toss"
+      ],
+      "path": "/typography_assets/icon_system",
+      "source_class": "unresolved"
+    }
+  ],
+  "design_md_sha256": "35c442a13abf5bff663672164fbd35d2b77f78b6e9e5e7474d34aef5fa9489e0",
+  "graph_sha256": "72509162e0a8a2f29d4bbc68495b94d59e44750a9a6e97924002bd04a8e346ef",
+  "schema_version": "2.0.0"
+}

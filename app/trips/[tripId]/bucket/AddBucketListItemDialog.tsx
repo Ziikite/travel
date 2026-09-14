@@ -72,29 +72,29 @@ export function AddBucketListItemDialog({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
+        className="rounded-full bg-primary px-4 py-2 text-body-strong text-on-primary transition-colors hover:bg-primary-hover"
       >
         + 버킷리스트 추가
       </button>
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-2xl border border-zinc-200 p-6 backdrop:bg-black/40"
+        className="w-full max-w-lg rounded-2xl border border-border p-6 backdrop:bg-black/40"
       >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <h2 className="text-lg font-bold text-zinc-900">버킷리스트 추가</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+          <h2 className="text-section-title text-ink">버킷리스트 추가</h2>
 
           <input
             name="title"
             placeholder="예: 발마사지 예약"
             required
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-border px-3 py-2 text-sm"
           />
 
           <div className="flex gap-2">
             <select
               name="contact_method"
               defaultValue=""
-              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-border px-3 py-2 text-sm"
             >
               <option value="">연락 방법 선택</option>
               {CONTACT_METHODS.map((m) => (
@@ -106,7 +106,7 @@ export function AddBucketListItemDialog({
             <input
               name="contact_info"
               placeholder="위챗 아이디 / 전화번호 등"
-              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-border px-3 py-2 text-sm"
             />
           </div>
 
@@ -116,19 +116,19 @@ export function AddBucketListItemDialog({
               type="number"
               step="0.01"
               placeholder="예상 가격(¥)"
-              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-border px-3 py-2 text-sm"
             />
             <input
               name="scheduled_at"
               type="datetime-local"
-              className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+              className="flex-1 rounded-lg border border-border px-3 py-2 text-sm"
             />
           </div>
 
           <select
             name="assigned_to"
             defaultValue=""
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-border px-3 py-2 text-sm"
           >
             <option value="">담당자 미정</option>
             {members.map((m) => (
@@ -142,7 +142,7 @@ export function AddBucketListItemDialog({
             <select
               name="place_id"
               defaultValue=""
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+              className="rounded-lg border border-border px-3 py-2 text-sm"
             >
               <option value="">연관 장소 없음</option>
               {places.map((p) => (
@@ -157,25 +157,25 @@ export function AddBucketListItemDialog({
             name="memo"
             placeholder="메모 (예약 방법, 유의사항 등)"
             rows={3}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-border px-3 py-2 text-sm"
           />
 
           <div>
-            <label className="mb-1 block text-xs text-zinc-500">사진 (선택)</label>
-            <input name="image" type="file" accept="image/*" className="block w-full text-sm text-zinc-600" />
+            <label className="mb-1 block text-xs text-ink-muted">사진 (선택)</label>
+            <input name="image" type="file" accept="image/*" className="block w-full text-sm text-ink-muted" />
           </div>
 
           <div className="mt-2 flex justify-end gap-2">
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              className="rounded-lg px-4 py-2 text-sm text-zinc-500"
+              className="rounded-lg px-4 py-2 text-sm text-ink-muted"
             >
               취소
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-lg bg-primary px-4 py-2 text-body-strong text-on-primary"
             >
               추가
             </button>

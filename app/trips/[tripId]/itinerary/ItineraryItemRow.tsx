@@ -3,6 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { createClient } from "@/lib/supabase/client";
+import { CopyButton } from "@/components/CopyButton";
 import { mapUrl } from "@/lib/maps";
 import type { ItineraryPlace, Place, Role } from "@/lib/types";
 
@@ -40,37 +41,47 @@ export function ItineraryItemRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex gap-3 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800"
+      className="flex gap-3 rounded-xl border border-border p-3 dark:border-zinc-800"
     >
       {canEdit && (
         <button
           type="button"
           {...attributes}
           {...listeners}
-          className="mt-1 shrink-0 cursor-grab text-zinc-400"
+          className="mt-1 shrink-0 cursor-grab text-ink-muted"
           aria-label="순서 변경"
         >
           ⠿
         </button>
       )}
 
-      <span className="mt-0.5 shrink-0 text-sm font-semibold text-zinc-400">{order}</span>
+      <span className="mt-0.5 shrink-0 text-sm font-semibold text-ink-muted">{order}</span>
 
       <div className="flex-1">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate font-medium text-zinc-900 dark:text-zinc-50">
-              {place?.name_zh ?? "삭제된 장소"}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="truncate text-body-strong text-ink dark:text-zinc-50">
+                {place?.name_zh ?? "삭제된 장소"}
+              </p>
+              {place?.name_zh && (
+                <CopyButton
+                  value={place.name_zh}
+                  label="이름 복사"
+                  successMessage="장소 이름을 복사했습니다"
+                  className="shrink-0 text-caption text-ink-muted hover:text-ink hover:underline"
+                />
+              )}
+            </div>
             {place?.address_zh && (
-              <p className="truncate text-xs text-zinc-500">{place.address_zh}</p>
+              <p className="truncate text-caption text-ink-muted">{place.address_zh}</p>
             )}
           </div>
           {canEdit && (
             <button
               type="button"
               onClick={() => onRemove(item.id)}
-              className="shrink-0 text-xs text-red-500 hover:underline"
+              className="shrink-0 text-xs text-danger hover:underline"
             >
               제거
             </button>
@@ -83,18 +94,18 @@ export function ItineraryItemRow({
             defaultValue={item.planned_arrival ?? ""}
             disabled={!canEdit}
             onBlur={(e) => update({ planned_arrival: e.target.value || null })}
-            className="rounded-lg border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
           />
-          <span className="text-zinc-400">~</span>
+          <span className="text-ink-muted">~</span>
           <input
             type="time"
             defaultValue={item.planned_departure ?? ""}
             disabled={!canEdit}
             onBlur={(e) => update({ planned_departure: e.target.value || null })}
-            className="rounded-lg border border-zinc-300 px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800"
           />
 
-          <label className="flex items-center gap-1 text-zinc-500">
+          <label className="flex items-center gap-1 text-ink-muted">
             <input
               type="checkbox"
               defaultChecked={item.is_time_fixed}
@@ -103,7 +114,7 @@ export function ItineraryItemRow({
             />
             시간 고정
           </label>
-          <label className="flex items-center gap-1 text-zinc-500">
+          <label className="flex items-center gap-1 text-ink-muted">
             <input
               type="checkbox"
               defaultChecked={item.is_meal}
@@ -124,19 +135,18 @@ export function ItineraryItemRow({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border border-zinc-300 px-2 py-1 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+              className="rounded-lg border border-border px-2 py-1 text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
             >
               {place?.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
             </a>
           )}
           {place?.address_zh && (
-            <button
-              type="button"
-              onClick={() => navigator.clipboard.writeText(place.address_zh ?? "")}
-              className="rounded-lg border border-zinc-300 px-2 py-1 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
-            >
-              주소 복사
-            </button>
+            <CopyButton
+              value={place.address_zh}
+              label="주소 복사"
+              successMessage="주소를 복사했습니다"
+              className="rounded-lg border border-border px-2 py-1 text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
+            />
           )}
         </div>
       </div>

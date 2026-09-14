@@ -142,7 +142,7 @@ export function PlaceBoard({
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value as "all" | Priority)}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="all">우선순위 전체</option>
             <option value="must">꼭 가기</option>
@@ -153,7 +153,7 @@ export function PlaceBoard({
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
+              className="rounded-lg border border-border bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
             >
               <option value="all">카테고리 전체</option>
               {categories.map((c) => (
@@ -166,16 +166,16 @@ export function PlaceBoard({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "votes" | "recent")}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded-lg border border-border bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-800"
           >
             <option value="recent">최신순</option>
             <option value="votes">투표순</option>
           </select>
-          <label className="flex items-center gap-1.5 rounded-lg border border-zinc-300 px-2 py-1.5 dark:border-zinc-700">
+          <label className="flex items-center gap-1.5 rounded-lg border border-border px-2 py-1.5 dark:border-zinc-700">
             <input type="checkbox" checked={onlyVoted} onChange={(e) => setOnlyVoted(e.target.checked)} />
             내가 투표한 곳만
           </label>
-          <label className="flex items-center gap-1.5 rounded-lg border border-zinc-300 px-2 py-1.5 dark:border-zinc-700">
+          <label className="flex items-center gap-1.5 rounded-lg border border-border px-2 py-1.5 dark:border-zinc-700">
             <input
               type="checkbox"
               checked={showDeleted}
@@ -193,7 +193,7 @@ export function PlaceBoard({
       </div>
 
       {visiblePlaces.length === 0 ? (
-        <p className="py-10 text-center text-sm text-zinc-500">
+        <p className="py-10 text-center text-sm text-ink-muted">
           {showDeleted ? "삭제된 장소가 없어요." : "아직 저장된 장소가 없어요. 검색해서 추가해보세요."}
         </p>
       ) : (
