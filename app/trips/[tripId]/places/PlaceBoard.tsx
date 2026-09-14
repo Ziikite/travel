@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTrip } from "@/lib/trip-context";
 import type { Place, PlaceVote, Priority } from "@/lib/types";
+import { TripMap, type MapPoint } from "@/components/TripMap";
 import { PlaceCard } from "./PlaceCard";
 import { PlaceSearchDialog } from "./PlaceSearchDialog";
 
@@ -135,6 +136,17 @@ export function PlaceBoard({
     return list;
   }, [places, showDeleted, priorityFilter, categoryFilter, onlyVoted, votedPlaceIds, sortBy, voteCountByPlace]);
 
+  const mapPoints: MapPoint[] = useMemo(
+    () =>
+      visiblePlaces.map((p) => ({
+        id: p.id,
+        name: p.name_zh,
+        longitude: p.longitude,
+        latitude: p.latitude,
+      })),
+    [visiblePlaces]
+  );
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -191,6 +203,10 @@ export function PlaceBoard({
           currentUserId={currentUserId}
         />
       </div>
+
+      {mapPoints.some((p) => p.latitude != null && p.longitude != null) && (
+        <TripMap points={mapPoints} />
+      )}
 
       {visiblePlaces.length === 0 ? (
         <p className="py-10 text-center text-sm text-ink-muted">

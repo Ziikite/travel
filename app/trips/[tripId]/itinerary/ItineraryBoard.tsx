@@ -15,7 +15,7 @@ import { useTrip } from "@/lib/trip-context";
 import type { Itinerary, ItineraryPlace, Place } from "@/lib/types";
 import { AddShoppingItemDialog } from "../shopping/AddShoppingItemDialog";
 import { ItineraryItemRow } from "./ItineraryItemRow";
-import { TripMap, type MapPoint } from "./TripMap";
+import { TripMap, type MapPoint } from "@/components/TripMap";
 
 type RawItineraryPlace = ItineraryPlace & { places: Place | Place[] | null };
 
