@@ -56,6 +56,7 @@ export function ItineraryBoard({
   currentUserId,
   shoppingListId,
   memberNicknames,
+  destinationCity,
 }: {
   tripId: string;
   tripStartDate: string | null;
@@ -66,6 +67,7 @@ export function ItineraryBoard({
   currentUserId: string;
   shoppingListId: string | null;
   memberNicknames: { userId: string; nickname: string }[];
+  destinationCity: string | null;
 }) {
   const { role } = useTrip();
   const canEdit = role === "owner" || role === "editor";
@@ -304,6 +306,7 @@ export function ItineraryBoard({
             currentUserId={currentUserId}
             members={memberNicknames}
             places={allPlaces.map((p) => ({ id: p.id, name_zh: p.name_zh }))}
+            destinationCity={destinationCity}
           />
         )}
       </div>

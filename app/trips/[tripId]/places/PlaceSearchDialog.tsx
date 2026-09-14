@@ -51,7 +51,7 @@ export function PlaceSearchDialog({
       setError(
         err instanceof Error
           ? err.message
-          : "검색에 실패했습니다. 구글맵 API 키가 설정되어 있는지 확인해주세요."
+          : "검색에 실패했습니다. 지도 API 키가 설정되어 있는지 확인해주세요."
       );
     } finally {
       setLoading(false);
@@ -64,15 +64,15 @@ export function PlaceSearchDialog({
     const { error } = await supabase.from("places").insert({
       trip_id: tripId,
       created_by: currentUserId,
-      // amap_poi_id 컬럼에 구글맵 place_id를 저장한다(지도 제공자에 무관한 범용 외부 POI 식별자로 취급).
       amap_poi_id: place.placeId,
       name_zh: place.name,
       name_ko: draft.nameKo.trim() || null,
       address_zh: place.address,
       latitude: place.latitude,
       longitude: place.longitude,
-      coordinate_system: "WGS84",
+      coordinate_system: place.coordinateSystem,
       category: place.category,
+      opening_hours: place.openingHours,
       priority: draft.priority,
       memo: draft.memo.trim() || null,
     });

@@ -65,6 +65,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `@dnd-kit/*` — drag-and-drop for the itinerary board
 - `nanoid` — invite code generation
 - Tailwind CSS 4 — styling
-- Map integration — see `lib/AGENTS.md` for details (README references 고덕지도/AMap; `@googlemaps/js-api-loader` is also a dependency)
+- Map integration — dual provider: 고덕지도(AMap) via `@amap/amap-jsapi-loader` is primary (works in China without a VPN), 구글맵 via `@googlemaps/js-api-loader` is the automatic fallback when AMap fails to load; see `lib/AGENTS.md` for details
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

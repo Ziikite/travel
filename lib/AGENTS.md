@@ -10,7 +10,7 @@ Shared, non-route application code: the hand-written Supabase database types, th
 
 | File | Description |
 |------|--------------|
-| `maps.ts` | Loads the Google Maps JS API (via `@googlemaps/js-api-loader`) and exposes `searchPlaces()`/`googleMapsUrl()` helpers — despite the README describing the long-term map provider as 고덕지도 (AMap), the code currently implemented is Google Maps only (see below). |
+| `maps.ts` | Dual-provider map module: tries the 고덕지도(AMap) JS API (via `@amap/amap-jsapi-loader`) first and falls back to 구글맵 (via `@googlemaps/js-api-loader`). Exposes `searchPlaces()` (AMap → Google fallback), `loadMapProvider()` (returns a `MapHandle` discriminated union for the map widget), and `mapUrl()`/`amapUrl()`/`googleMapsUrl()` deep-link helpers. |
 | `trip-context.tsx` | `"use client"` React context (`TripProvider`/`useTrip`) exposing `{ tripId, role, trip }` to client components under a trip route. Already documented elsewhere — listed here for completeness only. |
 | `types.ts` | Hand-written Supabase `Database` schema types (tables, RPC signatures) plus shared enum-like types (`Role`, `Priority`, etc). Already documented elsewhere — listed here for completeness only. |
 
@@ -23,10 +23,10 @@ Shared, non-route application code: the hand-written Supabase database types, th
 ## For AI Agents
 
 ### Working In This Directory
-- **Map provider mismatch, resolved by reading the code**: `package.json` depends on `@googlemaps/js-api-loader` and `@types/google.maps`, and `lib/maps.ts` imports and uses only that library (`setOptions`, `importLibrary("maps"|"marker"|"places")`, `Place.searchByText`). There is no AMap/JSAPI code anywhere in the repo (`grep -ri amap` outside comments/column names returns nothing executable). The README (`README.md` line 5) is internally consistent with this: it states the app currently uses Google Maps and describes switching `lib/maps.ts` back to a 고덕지도(AMap)-based implementation later, once an AMap key is available, pointing at a past "Add AMap-based MVP" commit in git history. So this is not a stale/incorrect README — it is an accurate description of a deliberate, temporary Google Maps fallback. Do not "fix" this by re-adding AMap code without an explicit product request.
-- `lib/maps.ts` guards every loader function against SSR (`typeof window === "undefined"` → rejects with a Korean error message) because the Google Maps JS loader only works in the browser — always call `searchPlaces`/`loadMapsLibrary`/etc. from client components, not Server Components/Actions.
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is the env var `maps.ts` reads; it is set once via a module-level `optionsSet` flag so `setOptions` only runs once per page load.
-- The `places.amap_poi_id` column (see `supabase/migrations/0001_init.sql` and `lib/types.ts`) is a legacy/generic name kept for forward-compatibility — it currently stores the Google Maps `place.id`, not an AMap POI id (see the Korean comment in `app/trips/[tripId]/places/PlaceSearchDialog.tsx`).
+- `lib/maps.ts` wraps both `@amap/amap-jsapi-loader` and `@googlemaps/js-api-loader`, and guards every loader function against SSR (`typeof window === "undefined"` → throws/rejects with a Korean error message) because both JS loaders only work in the browser — always call `searchPlaces`/`loadMapProvider`/etc. from client components, not Server Components/Actions.
+- 고덕지도 is the primary provider and 구글맵 is the automatic fallback: `searchPlaces()` tries AMap and falls back to Google on any failure (missing key, script load error, search error), and `loadMapProvider()` does the same for the interactive map widget. The widget deliberately renders a whole trip with the single provider the chain resolved to — never mix providers or convert coordinates there.
+- `NEXT_PUBLIC_AMAP_KEY`/`NEXT_PUBLIC_AMAP_SECURITY_CODE` (AMap; the security code is required for keys issued since 2021 and is set on `window._AMapSecurityConfig` before the loader runs) and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (Google fallback) are the env vars `maps.ts` reads. Both providers are cached via module-level promises (`amapLoadPromise`, `mapProviderPromise`, `googleOptionsSet`) so each SDK loads at most once per page load.
+- The `places.amap_poi_id` column (see `supabase/migrations/0001_init.sql` and `lib/types.ts`) stores the POI id returned by `searchPlaces()` (an AMap POI id or a Google place id depending on which provider answered). `places.coordinate_system` **varies per record** — always persist `PlaceSearchResult.coordinateSystem` (`"GCJ02"` for AMap, `"WGS84"` for Google) from the result that produced the row; never hardcode it, since the same install can produce both. `mapUrl()` reads that column back to pick the right deep-link provider per place (opening a GCJ02 coordinate in Google Maps lands in the wrong spot).
 
 ### Testing Requirements
 - No automated tests; validate with `npm run lint` / `npm run build`.
@@ -41,7 +41,8 @@ Shared, non-route application code: the hand-written Supabase database types, th
 - `lib/supabase/` — Supabase client construction consumed by app routes.
 
 ### External
-- `@googlemaps/js-api-loader`, `@types/google.maps` — Google Maps JS API loading (`maps.ts`).
+- `@amap/amap-jsapi-loader` — 고덕지도(AMap) JS API loading, the primary provider (`maps.ts`).
+- `@googlemaps/js-api-loader` (+ `@types/google.maps`) — 구글맵 JS API loading, the automatic fallback provider (`maps.ts`).
 - `@supabase/ssr`, `@supabase/supabase-js` — used by `lib/supabase/*` (typed via `types.ts`).
 - `react` — `trip-context.tsx`'s Context API usage.
 

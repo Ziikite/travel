@@ -3,7 +3,9 @@
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { DetailDialog } from "@/components/DetailDialog";
-import { googleMapsUrl } from "@/lib/maps";
+import { PlaceMapSearch } from "@/components/PlaceMapSearch";
+import { mapUrl } from "@/lib/maps";
+import type { PlaceSearchResult } from "@/lib/maps";
 import type { Place, Priority, Role } from "@/lib/types";
 
 const PRIORITY_LABEL: Record<Priority, string> = {
@@ -153,12 +155,18 @@ export function PlaceCard({
             value:
               place.latitude && place.longitude ? (
                 <a
-                  href={googleMapsUrl(place.latitude, place.longitude, place.amap_poi_id)}
+                  href={mapUrl(
+                    place.latitude,
+                    place.longitude,
+                    place.coordinate_system,
+                    place.name_zh,
+                    place.amap_poi_id
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 underline"
                 >
-                  구글맵에서 열기
+                  {place.coordinate_system === "GCJ02" ? "고덕지도에서 열기" : "구글맵에서 열기"}
                 </a>
               ) : null,
           },
@@ -189,13 +197,31 @@ export function PlaceCard({
 }
 
 function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) {
+  const [nameZh, setNameZh] = useState(place.name_zh);
   const [nameKo, setNameKo] = useState(place.name_ko ?? "");
+  const [addressZh, setAddressZh] = useState(place.address_zh ?? "");
+  const [latitude, setLatitude] = useState(place.latitude);
+  const [longitude, setLongitude] = useState(place.longitude);
+  const [amapPoiId, setAmapPoiId] = useState(place.amap_poi_id);
+  const [coordinateSystem, setCoordinateSystem] = useState(place.coordinate_system);
   const [priority, setPriority] = useState<Priority>(place.priority);
   const [category, setCategory] = useState(place.category ?? "");
   const [stayMinutes, setStayMinutes] = useState(place.stay_minutes?.toString() ?? "");
   const [openingHours, setOpeningHours] = useState(place.opening_hours ?? "");
   const [memo, setMemo] = useState(place.memo ?? "");
+  const [searching, setSearching] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  function applySearchResult(result: PlaceSearchResult) {
+    setNameZh(result.name);
+    setAddressZh(result.address);
+    setLatitude(result.latitude);
+    setLongitude(result.longitude);
+    setAmapPoiId(result.placeId);
+    setCoordinateSystem(result.coordinateSystem);
+    if (result.category) setCategory(result.category);
+    setSearching(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -204,7 +230,13 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
     await supabase
       .from("places")
       .update({
+        name_zh: nameZh,
         name_ko: nameKo || null,
+        address_zh: addressZh || null,
+        latitude,
+        longitude,
+        amap_poi_id: amapPoiId,
+        coordinate_system: coordinateSystem,
         priority,
         category: category || null,
         stay_minutes: stayMinutes ? Number(stayMinutes) : null,
@@ -218,6 +250,33 @@ function PlaceEditForm({ place, onDone }: { place: Place; onDone: () => void }) 
 
   return (
     <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-zinc-500">
+          {addressZh || "주소 정보 없음"}
+          {latitude == null && " (지도 위치 없음)"}
+        </span>
+        <button
+          type="button"
+          onClick={() => setSearching((v) => !v)}
+          className="shrink-0 text-xs text-blue-600 hover:underline"
+        >
+          {searching ? "검색 닫기" : "지도에서 다시 검색"}
+        </button>
+      </div>
+      {searching && <PlaceMapSearch onSelect={applySearchResult} />}
+      <input
+        value={nameZh}
+        onChange={(e) => setNameZh(e.target.value)}
+        placeholder="중국어 이름"
+        required
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+      />
+      <input
+        value={addressZh}
+        onChange={(e) => setAddressZh(e.target.value)}
+        placeholder="주소"
+        className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+      />
       <input
         value={nameKo}
         onChange={(e) => setNameKo(e.target.value)}

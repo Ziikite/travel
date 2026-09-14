@@ -17,6 +17,7 @@ export function ShoppingBoard({
   initialItems,
   memberNicknames,
   places: initialPlaces,
+  destinationCity,
 }: {
   tripId: string;
   shoppingListId: string | null;
@@ -24,6 +25,7 @@ export function ShoppingBoard({
   initialItems: ShoppingItem[];
   memberNicknames: Member[];
   places: PlaceOption[];
+  destinationCity: string | null;
 }) {
   const { role } = useTrip();
   const [items, setItems] = useState<ShoppingItem[]>(initialItems);
@@ -146,6 +148,7 @@ export function ShoppingBoard({
           currentUserId={currentUserId}
           members={memberNicknames}
           places={places}
+          destinationCity={destinationCity}
         />
       </div>
 
@@ -161,6 +164,8 @@ export function ShoppingBoard({
               creatorNickname={nicknameByUserId.get(item.created_by) ?? "알 수 없음"}
               assigneeNickname={item.assigned_to ? nicknameByUserId.get(item.assigned_to) ?? null : null}
               placeName={item.place_id ? placeNameById.get(item.place_id) ?? null : null}
+              members={memberNicknames}
+              places={places}
             />
           ))}
         </div>

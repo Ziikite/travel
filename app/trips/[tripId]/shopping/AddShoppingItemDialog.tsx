@@ -4,10 +4,13 @@ import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { uploadItemImage } from "@/lib/storage";
 import { showToast } from "@/lib/toast";
+import { PlaceMapSearch } from "@/components/PlaceMapSearch";
+import type { PlaceSearchResult } from "@/lib/maps";
 import type { PurchaseType } from "@/lib/types";
 
 type Member = { userId: string; nickname: string };
 type PlaceOption = { id: string; name_zh: string };
+type PlaceMode = "existing" | "search" | "manual";
 
 export function AddShoppingItemDialog({
   tripId,
@@ -15,15 +18,23 @@ export function AddShoppingItemDialog({
   currentUserId,
   members,
   places,
+  destinationCity,
 }: {
   tripId: string;
   shoppingListId: string;
   currentUserId: string;
   members: Member[];
   places: PlaceOption[];
+  destinationCity: string | null;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [addingNewPlace, setAddingNewPlace] = useState(false);
+  const [placeMode, setPlaceMode] = useState<PlaceMode>("existing");
+  const [searchedPlace, setSearchedPlace] = useState<PlaceSearchResult | null>(null);
+
+  function resetPlacePicker() {
+    setPlaceMode("existing");
+    setSearchedPlace(null);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,18 +51,40 @@ export function AddShoppingItemDialog({
     const referenceUrl = String(formData.get("reference_url") ?? "") || null;
     const purchaseType = formData.get("purchase_type") as PurchaseType;
     const imageFile = formData.get("image") as File | null;
+    const mapPlace = searchedPlace;
 
     // 응답을 기다리지 않고 팝업을 바로 닫는다. 업로드/저장은 백그라운드에서 진행되고,
     // 완료되면 실시간 구독을 통해 목록에 반영된다.
     form.reset();
-    setAddingNewPlace(false);
+    resetPlacePicker();
     dialogRef.current?.close();
 
     void (async () => {
       const supabase = createClient();
 
       let resolvedPlaceId = placeId || null;
-      if (newPlaceName) {
+      if (mapPlace) {
+        const { data: newPlace, error: placeError } = await supabase
+          .from("places")
+          .insert({
+            trip_id: tripId,
+            created_by: currentUserId,
+            amap_poi_id: mapPlace.placeId,
+            name_zh: mapPlace.name,
+            address_zh: mapPlace.address,
+            latitude: mapPlace.latitude,
+            longitude: mapPlace.longitude,
+            coordinate_system: mapPlace.coordinateSystem,
+            category: mapPlace.category,
+          })
+          .select("id")
+          .single();
+        if (placeError) {
+          showToast(`장소 저장 실패: ${placeError.message}`, "error");
+          return;
+        }
+        resolvedPlaceId = newPlace?.id ?? null;
+      } else if (newPlaceName) {
         const { data: newPlace, error: placeError } = await supabase
           .from("places")
           .insert({
@@ -153,21 +186,38 @@ export function AddShoppingItemDialog({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-zinc-500">구매 장소</label>
-              <button
-                type="button"
-                onClick={() => setAddingNewPlace((v) => !v)}
-                className="text-xs text-blue-600 hover:underline"
-              >
-                {addingNewPlace ? "기존 장소에서 선택" : "+ 새 장소 추가"}
-              </button>
+              <div className="flex gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlaceMode("existing");
+                    setSearchedPlace(null);
+                  }}
+                  className={placeMode === "existing" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                >
+                  기존
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPlaceMode("search")}
+                  className={placeMode === "search" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                >
+                  지도 검색
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlaceMode("manual");
+                    setSearchedPlace(null);
+                  }}
+                  className={placeMode === "manual" ? "font-semibold text-blue-600 underline" : "text-blue-600 hover:underline"}
+                >
+                  직접 입력
+                </button>
+              </div>
             </div>
-            {addingNewPlace ? (
-              <input
-                name="new_place_name"
-                placeholder="새 장소 이름 (예: 永辉超市)"
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
-              />
-            ) : (
+
+            {placeMode === "existing" && (
               <select
                 name="place_id"
                 defaultValue=""
@@ -181,6 +231,33 @@ export function AddShoppingItemDialog({
                 ))}
               </select>
             )}
+
+            {placeMode === "manual" && (
+              <input
+                name="new_place_name"
+                placeholder="새 장소 이름 (예: 永辉超市)"
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
+              />
+            )}
+
+            {placeMode === "search" &&
+              (searchedPlace ? (
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-zinc-900 dark:text-zinc-50">{searchedPlace.name}</p>
+                    <p className="truncate text-xs text-zinc-500">{searchedPlace.address}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSearchedPlace(null)}
+                    className="shrink-0 text-xs text-zinc-500 hover:underline"
+                  >
+                    변경
+                  </button>
+                </div>
+              ) : (
+                <PlaceMapSearch destinationCity={destinationCity} onSelect={setSearchedPlace} />
+              ))}
           </div>
 
           <input
@@ -211,7 +288,10 @@ export function AddShoppingItemDialog({
           <div className="mt-2 flex justify-end gap-2">
             <button
               type="button"
-              onClick={() => dialogRef.current?.close()}
+              onClick={() => {
+                resetPlacePicker();
+                dialogRef.current?.close();
+              }}
               className="rounded-lg px-4 py-2 text-sm text-zinc-500"
             >
               취소

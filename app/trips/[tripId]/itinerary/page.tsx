@@ -45,6 +45,7 @@ export default async function ItineraryPage(props: PageProps<"/trips/[tripId]/it
       currentUserId={user?.id ?? ""}
       shoppingListId={shoppingList?.id ?? null}
       memberNicknames={memberNicknames}
+      destinationCity={trip?.destination_city ?? null}
     />
   );
 }
