@@ -120,6 +120,17 @@ export function PlaceCard({
             <span className="text-ink-muted">체류 {place.stay_minutes}분</span>
           )}
           {place.opening_hours && <span className="text-ink-muted">{place.opening_hours}</span>}
+          {place.amap_url && (
+            <a
+              href={place.amap_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="rounded-full border border-border px-2 py-0.5 text-ink-muted transition-colors hover:border-primary hover:text-ink"
+            >
+              📍 고덕지도로 이동
+            </a>
+          )}
         </div>
 
         {place.memo && (
