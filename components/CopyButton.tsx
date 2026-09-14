@@ -6,7 +6,7 @@ export function CopyButton({
   value,
   label,
   successMessage,
-  className = "text-caption hover:underline",
+  className = "rounded-full bg-surface-sunken px-2 py-0.5 text-caption text-ink-muted transition-colors hover:bg-border hover:text-ink",
 }: {
   value: string;
   label: string;

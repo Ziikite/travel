@@ -75,7 +75,6 @@ export function PlaceCard({
                 value={place.name_zh}
                 label="이름 복사"
                 successMessage="장소 이름을 복사했습니다"
-                className="text-caption text-ink-muted hover:text-ink hover:underline"
               />
             </div>
             {place.address_zh && (
@@ -85,7 +84,6 @@ export function PlaceCard({
                   value={place.address_zh}
                   label="주소 복사"
                   successMessage="주소를 복사했습니다"
-                  className="text-caption text-ink-muted hover:text-ink hover:underline"
                 />
               </div>
             )}
@@ -166,7 +164,6 @@ export function PlaceCard({
                   value={place.address_zh}
                   label="복사"
                   successMessage="주소를 복사했습니다"
-                  className="text-caption text-ink-muted hover:text-ink hover:underline"
                 />
               </span>
             ) : null,

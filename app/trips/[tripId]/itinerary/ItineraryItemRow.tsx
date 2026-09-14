@@ -69,7 +69,7 @@ export function ItineraryItemRow({
                   value={place.name_zh}
                   label="이름 복사"
                   successMessage="장소 이름을 복사했습니다"
-                  className="shrink-0 text-caption text-ink-muted hover:text-ink hover:underline"
+                  className="shrink-0 rounded-full bg-surface-sunken px-2 py-0.5 text-caption text-ink-muted transition-colors hover:bg-border hover:text-ink"
                 />
               )}
             </div>
@@ -145,7 +145,6 @@ export function ItineraryItemRow({
               value={place.address_zh}
               label="주소 복사"
               successMessage="주소를 복사했습니다"
-              className="rounded-lg border border-border px-2 py-1 text-ink-muted dark:border-zinc-700 dark:text-zinc-300"
             />
           )}
         </div>
